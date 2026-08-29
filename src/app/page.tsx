@@ -52,6 +52,46 @@ export default async function HomePage() {
     <>
       <HomeHero events={heroEvents} chaptersCount={chapters.length} eventsCount={latestEvents.length} />
 
+      {/* About RAS Connect Section */}
+      <section className="section-space bg-background border-b border-line" aria-labelledby="about-heading">
+        <div className="page-container">
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-16">
+            {/* Left Side: Tag and Title */}
+            <div className="lg:col-span-4">
+              <Reveal>
+                <div className="flex items-center gap-3">
+                  <span className="inline-block size-2 bg-brand rounded-none shrink-0" />
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-brand">
+                    ABOUT
+                  </span>
+                </div>
+                <h2
+                  id="about-heading"
+                  className="mt-4 text-4xl font-black uppercase leading-[0.9] tracking-[-0.04em] text-ink sm:text-5xl lg:text-6xl flex flex-col select-none"
+                >
+                  <span className="flex items-center">
+                    RAS<span className="text-brand font-mono font-light mx-1">/</span>
+                  </span>
+                  <span className="text-brand-deep">CONNECT<span className="text-accent font-sans">.</span></span>
+                </h2>
+              </Reveal>
+            </div>
+
+            {/* Right Side: Description Narrative */}
+            <div className="lg:col-span-8 flex flex-col">
+              <Reveal delay={0.1}>
+                <p className="text-pretty text-lg font-medium leading-relaxed text-ink/90 md:text-xl">
+                  Initiated in connection with <span className="text-brand font-bold">IEEE RAS Day</span>, RAS Connect is a statewide digital ecosystem designed to bridge, showcase, and synergize the initiatives of IEEE Robotics & Automation Society (RAS) Student Branch Chapters across Kerala.
+                </p>
+                <p className="mt-4 text-pretty text-base leading-relaxed text-muted">
+                  The platform serves as an interactive catalog and showcase, documenting local events, technical milestones, and collaborative projects. By consolidating student branch updates into a single public directory, RAS Connect fosters peer-to-peer learning, enhances state-wide community outreach, and highlights Kerala's growing ecosystem of robotics education.
+                </p>
+              </Reveal>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Explore All Events Section */}
       <section className="section-space bg-surface border-b border-line" aria-labelledby="events-heading">
         <div className="page-container">

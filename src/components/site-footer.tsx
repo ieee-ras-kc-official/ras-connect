@@ -65,12 +65,38 @@ export function SiteFooter() {
               Have questions about events or chapters? Reach out to us.
             </p>
             <div className="mt-4 flex flex-col gap-2.5 font-mono text-[10px] sm:text-[11px] uppercase tracking-wider text-muted">
-              <a href="mailto:ras-kerala@ieee.org" className="hover:text-brand transition-colors w-fit block truncate">
-                E: ras-kerala@ieee.org
+              <a href="https://www.ieee-ras.org/" target="_blank" rel="noopener noreferrer" className="hover:text-brand transition-colors w-fit block truncate">
+                W: ieee-ras.org
               </a>
-              <a href="https://ieee-ras-kerala.org" target="_blank" rel="noopener noreferrer" className="hover:text-brand transition-colors w-fit block truncate">
-                W: ieee-ras-kerala.org
-              </a>
+            </div>
+
+            {/* Social Links Block */}
+            <div className="mt-6 border-t border-line/60 pt-4">
+              <h5 className="font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-brand/80 mb-2.5">
+                // Social Channels
+              </h5>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-2 font-mono text-[10px] uppercase tracking-wider">
+                <a href="https://www.linkedin.com/company/ieee-robotics-and-automation-society-kerala-chapter/" target="_blank" rel="noopener noreferrer" className="text-muted hover:text-brand transition-colors flex items-center gap-1.5 w-fit">
+                  <span className="inline-block size-1 bg-brand rounded-none shrink-0" />
+                  LinkedIn
+                </a>
+                <a href="https://www.instagram.com/ieeeraskc/" target="_blank" rel="noopener noreferrer" className="text-muted hover:text-brand transition-colors flex items-center gap-1.5 w-fit">
+                  <span className="inline-block size-1 bg-brand rounded-none shrink-0" />
+                  Instagram
+                </a>
+                <a href="https://youtube.com/@ieeeraskeralachapter5056" target="_blank" rel="noopener noreferrer" className="text-muted hover:text-brand transition-colors flex items-center gap-1.5 w-fit">
+                  <span className="inline-block size-1 bg-brand rounded-none shrink-0" />
+                  YouTube
+                </a>
+                <a href="https://twitter.com/ieeerasks/" target="_blank" rel="noopener noreferrer" className="text-muted hover:text-brand transition-colors flex items-center gap-1.5 w-fit">
+                  <span className="inline-block size-1 bg-brand rounded-none shrink-0" />
+                  Twitter
+                </a>
+                <a href="https://whatsapp.com/channel/0029VaZmQVh4tRroaJv74B1h" target="_blank" rel="noopener noreferrer" className="text-muted hover:text-brand transition-colors flex items-center gap-1.5 w-fit">
+                  <span className="inline-block size-1 bg-brand rounded-none shrink-0" />
+                  WhatsApp
+                </a>
+              </div>
             </div>
           </div>
         </div>
