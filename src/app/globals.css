@@ -1,0 +1,139 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: "Manrope Variable", "Manrope", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  --color-background: #faf9fb;
+  --color-surface: #ffffff;
+  --color-surface-soft: #f4edf5;
+  --color-surface-strong: #eadfeb;
+  --color-brand: #61116a;
+  --color-brand-deep: #42004a;
+  --color-accent: #98012e;
+  --color-ink: #1d1820;
+  --color-muted: #6f6672;
+  --color-line: #e7e0e9;
+
+  --shadow-soft: 0 16px 40px rgba(97, 17, 106, 0.08);
+  --shadow-lift: 0 24px 60px rgba(97, 17, 106, 0.12);
+
+  --ease-brand: cubic-bezier(0.2, 0, 0, 1);
+}
+
+:root {
+  color-scheme: light;
+  --header-height: 72px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-height) + 24px);
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--color-background);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: rgba(97, 17, 106, 0.16);
+  color: var(--color-brand-deep);
+}
+
+:focus-visible {
+  outline: 3px solid rgba(97, 17, 106, 0.38);
+  outline-offset: 3px;
+}
+
+.page-container {
+  width: min(100% - 40px, 1280px);
+  margin-inline: auto;
+}
+
+.section-space {
+  padding-block: clamp(72px, 9vw, 128px);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.text-pretty {
+  text-wrap: pretty;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --header-height: 64px;
+  }
+
+  .page-container {
+    width: min(100% - 40px, 1280px);
+  }
+
+  .section-space {
+    padding-block: 72px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes preloader-pulse {
+  0%, 100% {
+    transform: scale(0.97);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 1;
+  }
+}
+
+@keyframes preloader-progress {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+.animate-preloader-pulse {
+  animation: preloader-pulse 2s ease-in-out infinite;
+}
+
+.animate-preloader-progress {
+  animation: preloader-progress 1.4s cubic-bezier(0.2, 0, 0, 1) forwards;
+}

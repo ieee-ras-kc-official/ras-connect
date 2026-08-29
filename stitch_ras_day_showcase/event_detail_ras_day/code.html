@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Event Detail - IEEE RAS Kerala</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-fixed": "#36003d",
+                      "surface-bright": "#fff7fd",
+                      "secondary-container": "#fe5971",
+                      "on-secondary-fixed": "#40000e",
+                      "outline": "#81737f",
+                      "primary-container": "#61116a",
+                      "on-tertiary-fixed-variant": "#49454c",
+                      "surface": "#fff7fd",
+                      "on-error-container": "#93000a",
+                      "error": "#ba1a1a",
+                      "primary-fixed-dim": "#fea9ff",
+                      "outline-variant": "#d3c1cf",
+                      "background": "#fff7fd",
+                      "surface-tint": "#8d3e94",
+                      "secondary": "#b52140",
+                      "tertiary": "#242227",
+                      "tertiary-container": "#3a373d",
+                      "inverse-surface": "#342e37",
+                      "surface-container-highest": "#eadfeb",
+                      "surface-container-high": "#f0e5f1",
+                      "on-secondary": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "on-background": "#1f1a22",
+                      "on-primary-container": "#d982dd",
+                      "on-tertiary-container": "#a5a0a7",
+                      "inverse-primary": "#fea9ff",
+                      "tertiary-fixed": "#e7e0e8",
+                      "surface-variant": "#eadfeb",
+                      "on-primary": "#ffffff",
+                      "primary-fixed": "#ffd6fb",
+                      "inverse-on-surface": "#f8edf9",
+                      "on-surface": "#1f1a22",
+                      "tertiary-fixed-dim": "#cbc4cc",
+                      "on-secondary-container": "#5f0019",
+                      "surface-container-lowest": "#ffffff",
+                      "primary": "#42004a",
+                      "surface-container": "#f5ebf6",
+                      "secondary-fixed-dim": "#ffb2b8",
+                      "surface-dim": "#e1d7e2",
+                      "on-surface-variant": "#50434e",
+                      "on-error": "#ffffff",
+                      "secondary-fixed": "#ffdadb",
+                      "on-tertiary-fixed": "#1d1a20",
+                      "on-secondary-fixed-variant": "#91002b",
+                      "surface-container-low": "#fbf0fc",
+                      "on-primary-fixed-variant": "#72247a",
+                      "on-tertiary": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-desktop": "64px",
+                      "gutter": "24px",
+                      "margin-tablet": "32px",
+                      "margin-mobile": "16px",
+                      "stack-lg": "32px",
+                      "stack-md": "16px",
+                      "unit": "8px",
+                      "container-max": "1200px",
+                      "stack-sm": "8px"
+              },
+              "fontFamily": {
+                      "body-lg": [
+                              "manrope"
+                      ],
+                      "headline-md": [
+                              "manrope"
+                      ],
+                      "body-md": [
+                              "manrope"
+                      ],
+                      "headline-lg": [
+                              "manrope"
+                      ],
+                      "label-mono": [
+                              "ibmPlexMono"
+                      ],
+                      "label-caps": [
+                              "ibmPlexMono"
+                      ],
+                      "display-lg-mobile": [
+                              "manrope"
+                      ],
+                      "body-sm": [
+                              "manrope"
+                      ],
+                      "display-lg": [
+                              "manrope"
+                      ]
+              },
+              "fontSize": {
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-mono": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "display-lg-mobile": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        body { background-color: #FAF9FB; }
+        .material-symbols-outlined { font-family: 'Material Symbols Outlined', sans-serif; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .shadow-soft { box-shadow: 0 4px 12px rgba(97, 17, 106, 0.08); }
+    </style>
+</head>
+<body class="text-on-background font-body-md antialiased pt-[70px]">
+<!-- TopNavBar -->
+<header class="bg-surface/80 dark:bg-surface/80 backdrop-blur-md fixed top-0 w-full h-[70px] z-50 border-b border-outline-variant/30 flat no shadows">
+<div class="flex justify-between items-center px-margin-desktop md:px-margin-tablet px-margin-mobile max-w-container-max mx-auto h-full">
+<div class="flex items-center gap-4">
+<img alt="IEEE RAS Logo" class="h-8 w-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsNYTlvEcYBC6-fvF5KPaeW5y1GfxeyLYyIUqfwvRgJ1NufHh6dhqzbCRZObXGYDyeVQYPPRsB3xOvu0KjI4Zc-RzA5Be6lNAuJpfgxCqzWsmDRPV7dctFvgxguTmS52gcwTGqPhlyBiTqVNTgbn2yClD9qvQ3sqDHSlVTBiZTWXWtiVeE0B1n-29wfC53Zp6-OFytAdzqptdo7Hb4Zq8nntVcMBQzSlIBx2NSZAh_Bz7ZGJfotQOPI-LALrZA1_ph03A"/>
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary hidden md:block">IEEE RAS Kerala</span>
+</div>
+<nav class="hidden md:flex gap-gutter">
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-inverse-primary transition-colors font-body-md text-body-md" href="#">Home</a>
+<a class="text-primary dark:text-inverse-primary border-b-2 border-secondary pb-1 opacity-80 transition-all font-body-md text-body-md" href="#">Chapters</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-inverse-primary transition-colors font-body-md text-body-md" href="#">Archive</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-inverse-primary transition-colors font-body-md text-body-md" href="#">About</a>
+</nav>
+<button class="md:hidden text-primary dark:text-inverse-primary">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-tablet lg:px-margin-desktop py-stack-lg">
+<!-- Breadcrumb -->
+<nav aria-label="Breadcrumb" class="flex text-on-surface-variant font-label-mono text-label-mono mb-stack-lg">
+<ol class="inline-flex items-center space-x-1 md:space-x-2">
+<li class="inline-flex items-center">
+<a class="hover:text-primary transition-colors" href="#">Home</a>
+</li>
+<li>
+<div class="flex items-center">
+<span class="material-symbols-outlined mx-1 text-sm">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Chapters</a>
+</div>
+</li>
+<li>
+<div class="flex items-center">
+<span class="material-symbols-outlined mx-1 text-sm">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">TKMCE SBC</a>
+</div>
+</li>
+<li aria-current="page">
+<div class="flex items-center">
+<span class="material-symbols-outlined mx-1 text-sm">chevron_right</span>
+<span class="text-primary font-medium">Robotics Workshop 2024</span>
+</div>
+</li>
+</ol>
+</nav>
+<!-- Main Content Split -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter mb-stack-lg">
+<!-- Left: Image -->
+<div class="lg:col-span-7">
+<div class="rounded-xl overflow-hidden shadow-soft h-[400px] lg:h-[600px] bg-surface-container relative group">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A wide-angle, high-quality photograph of a bustling robotics workshop taking place in a modern, well-lit university laboratory. Groups of students are huddled over tables, actively assembling and programming small wheeled robots. The lighting is bright and clean, typical of a modern tech environment, enhancing the sleek light-mode corporate aesthetic. Soft shadows emphasize the depth of the room. The mood is collaborative, focused, and dynamic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqXCVvl56COnzjaZDffo-Fo5dXYgMYTzJqOvLYMRM4dCjEN9nDZvecTppwoj14qnEOBvtdzIODDIzRMXaZqDj5TTadudgkM2L7LnYzQjsLT8GPCCtw6ztqekBhh4XPSI4k7LEogLS1JwYM7SPIOuiivf1QdvPT0cf_aMuimkQPU_lUvajBsBih7XZkNLqS0i4MkGR61te8n2P2w6XC4LXpYQWI6O3xKKSBSZZwU4v1ava7djUwUeD2Qg"/>
+</div>
+</div>
+<!-- Right: Details -->
+<div class="lg:col-span-5 flex flex-col justify-start">
+<span class="inline-flex items-center px-3 py-1 rounded-full border border-outline-variant text-secondary bg-surface-container-lowest font-label-caps text-label-caps w-fit mb-4">
+                    UPCOMING
+                </span>
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-background mb-2">Robotics Workshop 2024</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-stack-md">Organized by <a class="text-primary hover:underline font-medium" href="#">TKMCE SBC</a></p>
+<!-- Metadata Cards -->
+<div class="grid grid-cols-1 gap-4 mb-stack-lg">
+<div class="bg-surface-container-lowest border border-outline-variant/50 rounded-lg p-4 flex items-start gap-4">
+<div class="p-2 bg-surface-container-high rounded-lg text-primary">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+</div>
+<div>
+<p class="font-label-mono text-label-mono text-on-surface-variant uppercase">Date &amp; Time</p>
+<p class="font-body-md text-body-md font-medium text-on-background">October 15, 2024 • 10:00 AM - 4:00 PM</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant/50 rounded-lg p-4 flex items-start gap-4">
+<div class="p-2 bg-surface-container-high rounded-lg text-primary">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">location_on</span>
+</div>
+<div>
+<p class="font-label-mono text-label-mono text-on-surface-variant uppercase">Location</p>
+<p class="font-body-md text-body-md font-medium text-on-background">Main Auditorium, TKM College of Engineering, Kollam</p>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant/50 rounded-lg p-6 flex-grow">
+<h2 class="font-headline-md text-headline-md text-on-background mb-4">About the event</h2>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed mb-4">
+                        Join us for an intensive one-day workshop designed to introduce the fundamentals of robotics design and programming. Participants will get hands-on experience building autonomous line-following robots using Arduino microcontrollers and various sensors.
+                    </p>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                        No prior experience is required. Kits will be provided during the session. This is a fantastic opportunity to network with fellow robotics enthusiasts and kickstart your journey into automation.
+                    </p>
+</div>
+<div class="mt-stack-md">
+<button class="w-full bg-[#61116A] text-white font-body-md text-body-md font-medium py-3 px-6 rounded-[10px] hover:bg-primary-container/90 transition-colors shadow-soft">
+                        Register Now
+                    </button>
+</div>
+</div>
+</div>
+<!-- Optional Gallery -->
+<section class="mt-stack-lg border-t border-outline-variant/30 pt-stack-lg">
+<h3 class="font-headline-md text-headline-md text-on-background mb-stack-md">Gallery</h3>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="rounded-lg overflow-hidden h-40 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Close-up shot of a student's hands carefully connecting wires on a breadboard attached to a small robotic chassis. The scene is brightly lit with a clean, light-mode corporate aesthetic, emphasizing focus and technical detail. The background is a soft blur of other workbench tools." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKM7VR8uRjs78xNB_nQio9xcE7sdAsZNmJpU-higGpOdzU1L2hi4VVbK-NYKL4UxTK1XmracUVBPB6k5ZN8i-02gRzP1j2PDF7u4zBEnKtrziqUWn54oxIHfn6pHbNx9zld2OmSDQ1-P4GxLNzMmvB2QlNqyLmSELPwIFF0xN7QxwaSj5fH3OuIGo5sSVE-1_0-0eHXyE9FuqcdeWS_APk8BvJNsF5gYDJIO_kIbJwxM5oo_MoHRxOJA"/>
+</div>
+<div class="rounded-lg overflow-hidden h-40 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A small, custom-built autonomous rover navigating a taped line on the floor. The setting is a polished lab environment with bright, diffuse lighting typical of a high-end corporate or academic space. The robot features exposed circuits and sensors, looking sleek and modern." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-uTpBNW-a9FUvsJDprzWLd1yPmgxfIxamK0hTg_SPgJE1ihtk2P3DcXME4ksyUi2Cr2S7VjhV6WaHRPX2HooMmncEGXe6eMFQK_Rflaxb1kHsysEzFqt7UkBlRnP1P-Crt5Z8Xox721rNUn0X6-fhjKsXy2kwrEtsD9C1k14GIICVdtuWnxKmyAkXMqbV0zuM5jbXiTvlcUH0cjw0SyBNCVlG6BLG4eEKt49DGxqgd_7NFgttEXKUFg"/>
+</div>
+<div class="rounded-lg overflow-hidden h-40 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A group of three university students smiling and looking at a laptop screen together, pointing at lines of code. They are in a well-lit, modern laboratory setting reflecting a clean, light-mode aesthetic. The atmosphere is collaborative and cheerful." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVCbzA4xY_-_R7Hc2Gb9_1fHQyhkrlIEZcbowTPoW8yhJcPJzCyrqU3l-1oK4yiCQR2JQwHW00U2wyNSK4ESnMqaUPLNqQDqOqpLGW6szjLvJ_bSBqPiohbCnlioh2FgG5-EXVUW5UNd5k1bPqjNZ6VbgbTBxv9tw2zdMihqMQMxBus8pV_7ar3Oh1GXVnVCPR7PBWv9fYTCYXi74CKzxtA9yN1IlrrPIFxXZh_JTAqIzOeq8m6yRERw"/>
+</div>
+<div class="rounded-lg overflow-hidden h-40 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Wide shot of an auditorium stage with a presenter gesturing towards a large projection screen displaying robotics schematics. The lighting is crisp and professional, fitting a premium corporate or academic event style. The audience is visible in soft focus in the foreground." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkUdgqPZfBC7PhrHi9EYvW5hIZiQjUT2GYFjzzVnL-h3umzYnGhsCRLxDhyZST2hjfnmJSi2eFa9SiaHxy6MdIJ-1fyahBI1UfW3m5wfGBF8iY0-lpZcT18ADneKPkzgEctne2tR4xE7dxJFr_0TPeDAJ1CPto8W9pSSbsLGbEfeQaTefg7h-GwcfpHLQ4JzIcua9-v6JFprLaUsPUXkKn9zGy0hVYULIHLtY0JKkhbE1pr_w-U_1uOQ"/>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Section: More from this chapter -->
+<div class="bg-surface-container pt-stack-lg pb-stack-lg border-t border-outline-variant/20">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-tablet lg:px-margin-desktop">
+<div class="flex justify-between items-end mb-stack-md">
+<h3 class="font-headline-md text-headline-md text-on-background">More from TKMCE SBC</h3>
+<a class="font-body-md text-body-md text-primary font-medium hover:underline flex items-center gap-1" href="#">
+                    Back to chapter
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Related Event Card 1 -->
+<div class="bg-surface-container-lowest rounded-[14px] shadow-soft border border-outline-variant/30 overflow-hidden group cursor-pointer hover:shadow-md transition-shadow">
+<div class="h-48 bg-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A sleek, modern drone hovering mid-air in an indoor testing facility. The environment is bright and spacious, showcasing a clean, light-mode technical aesthetic. Soft shadows emphasize the drone's structural details. The mood is high-tech and precise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBn6ym3Qx1EdAhkxLjisYagV1tnXUuKcQJgiRXl9z430Z8CPNgWo-JaTtPWCC2EJgazWoI-YzsGlSw7xlDH5V0HBBPJ2A9ZU19DfQkeOeHiqaJq1ZoL3qBA_UjtAM1fP0NQAZrBRRWjYmkpEicTuXEcUylD4wTiIOLTh-wkN344Zne2piYYlfW_UXhBpft6X9ShSjZsTmEef8gsLXm5A_6ManLhfUdA-D7Ne3YzJKhveCoXZfZKKvEIYw"/>
+</div>
+<div class="p-4">
+<span class="font-label-mono text-label-mono text-primary mb-2 block uppercase tracking-wider">Nov 12, 2024</span>
+<h4 class="font-headline-md text-body-lg font-bold text-on-background mb-2">Drone Navigation Systems</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">An advanced seminar on algorithms used for autonomous drone flight in complex environments.</p>
+</div>
+</div>
+<!-- Related Event Card 2 -->
+<div class="bg-surface-container-lowest rounded-[14px] shadow-soft border border-outline-variant/30 overflow-hidden group cursor-pointer hover:shadow-md transition-shadow">
+<div class="h-48 bg-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A robotic arm performing a precise manipulation task on an assembly line mockup. The setting is a brightly lit, pristine industrial lab, reflecting a modern corporate and academic style. The metallic surfaces of the robot reflect the clean, cool-tinted light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFapjSs-e5qtSe_Qqdww2_iq7X3IOWLt-SfUXHAzXmsTpAxfbxa_SC1Eogy_BWBImDdD3ZKmpAQKgnFJga6V4HAkJnqs0t4pENMirCqZEjfScCuZDc7DG3oJzrnySD1RMCq9sVRALV_A0AMTCDFHMioqrQuj7Ax4eBDEDy4XbKiISwk7q12ZbhPhYzBFpqkziFrcnUgxjfzV4CUAZwGeGj6t3RDgI7GJS8eiTB6rrTzpUoPEq_I9tyXw"/>
+</div>
+<div class="p-4">
+<span class="font-label-mono text-label-mono text-on-surface-variant mb-2 block uppercase tracking-wider">Dec 05, 2024</span>
+<h4 class="font-headline-md text-body-lg font-bold text-on-background mb-2">Industrial Automation Talk</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Industry experts discuss the future of robotic manipulators in manufacturing lines.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container-low dark:bg-surface-container-lowest w-full py-stack-lg border-t border-outline-variant/20 flat no shadows">
+<div class="flex flex-col md:flex-row justify-between items-start gap-gutter px-margin-desktop md:px-margin-tablet px-margin-mobile max-w-container-max mx-auto">
+<div>
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary mb-4 block">IEEE RAS Kerala</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">© 2024 IEEE Robotics and Automation Society Kerala Chapter. All rights reserved.</p>
+</div>
+<div class="flex flex-wrap gap-4">
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors font-body-sm text-body-sm" href="#">Home</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors font-body-sm text-body-sm" href="#">Chapters</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors font-body-sm text-body-sm" href="#">Archive</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors font-body-sm text-body-sm" href="#">About</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors font-body-sm text-body-sm" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors font-body-sm text-body-sm" href="#">Contact</a>
+</div>
+</div>
+</footer>
+</body></html>
