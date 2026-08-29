@@ -77,7 +77,7 @@ export function HomeHero({ events }: HomeHeroProps) {
   };
 
   return (
-    <section className="border-b border-line bg-background relative overflow-hidden">
+    <section className="border-b border-line bg-background relative overflow-hidden md:min-h-[calc(100dvh-var(--header-height))] md:flex md:flex-col md:justify-stretch">
       {/* Subtle technical crosshair and grid markings in the background */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.03] select-none" aria-hidden="true">
         <div className="absolute top-10 left-10 w-4 h-4 border-t border-l border-ink" />
@@ -89,7 +89,7 @@ export function HomeHero({ events }: HomeHeroProps) {
         <div className="absolute top-[80%] left-0 w-full border-t border-dashed border-ink/40" />
       </div>
 
-      <div className="page-container flex flex-col md:grid md:grid-cols-12 md:items-stretch border-x border-line relative z-10">
+      <div className="page-container flex-1 flex flex-col md:grid md:grid-cols-12 md:items-stretch border-x border-line relative z-10">
         
         {/* Left Panel: Hero Content */}
         <div className="col-span-12 md:col-span-6 flex flex-col justify-center min-h-[calc(100dvh-var(--header-height))] md:min-h-0 py-6 px-4 md:px-0 md:py-10 md:pr-8 lg:pr-14 md:border-r md:border-line">
