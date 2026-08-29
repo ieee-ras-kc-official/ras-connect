@@ -1,5 +1,4 @@
 import { ArrowRightIcon } from "@phosphor-icons/react/ssr";
-import type { Metadata } from "next";
 import Link from "next/link";
 import { ChapterExplorer } from "@/components/chapter-explorer";
 import { HomeHero } from "@/components/home-hero";
@@ -7,9 +6,6 @@ import { Reveal } from "@/components/reveal";
 import { EventCard } from "@/components/event-card";
 import { API_BASE_URL } from "@/config/api";
 
-export const metadata: Metadata = {
-  title: "Robotics events across Kerala",
-};
 
 async function getChapters() {
   try {

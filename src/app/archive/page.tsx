@@ -4,8 +4,9 @@ import { ArchiveBrowser } from "@/components/archive-browser";
 import { API_BASE_URL } from "@/config/api";
 
 export const metadata: Metadata = {
-  title: "Event archive",
-  description: "Past RAS Connect events, organized for easy browsing.",
+  title: "Robotics Event Archive",
+  description:
+    "Browse the historic archive of robotics competitions, technical exhibitions, and learning milestones documented by IEEE RAS student branch chapters in Kerala.",
 };
 
 async function getChapters() {

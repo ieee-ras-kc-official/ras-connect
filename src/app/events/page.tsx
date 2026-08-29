@@ -4,8 +4,9 @@ import { EventSearch } from "@/components/event-search";
 import { API_BASE_URL } from "@/config/api";
 
 export const metadata: Metadata = {
-  title: "Events",
-  description: "Browse all robotics and automation events across chapters.",
+  title: "Robotics Events & Workshops in Kerala",
+  description:
+    "Explore upcoming and completed robotics events, hands-on automation workshops, hackathons, and seminars hosted by IEEE RAS Student Branch Chapters.",
 };
 
 async function getChapters() {

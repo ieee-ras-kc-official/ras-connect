@@ -4,9 +4,9 @@ import { ChapterSearch } from "@/components/chapter-search";
 import { API_BASE_URL } from "@/config/api";
 
 export const metadata: Metadata = {
-  title: "Student Branch Chapters",
+  title: "IEEE RAS Student Branch Chapters",
   description:
-    "Explore the colleges and student communities contributing to RAS Connect.",
+    "Discover the engineering colleges, student branch chapters, and active community hubs driving robotics innovation across Kerala on RAS Connect.",
 };
 
 async function getChapters() {
