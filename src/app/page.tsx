@@ -1,46 +1,81 @@
-import { ArrowRightIcon } from "@phosphor-icons/react/ssr";
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { ArrowRightIcon } from "@phosphor-icons/react";
 import { ChapterExplorer } from "@/components/chapter-explorer";
 import { HomeHero } from "@/components/home-hero";
 import { Reveal } from "@/components/reveal";
 import { EventCard } from "@/components/event-card";
 import { API_BASE_URL } from "@/config/api";
 
-
-async function getChapters() {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/chapters`, { cache: "no-store" });
-    if (!res.ok) throw new Error();
-    return await res.json();
-  } catch (err) {
-    return [];
-  }
+function Preloader() {
+  return (
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background select-none">
+      <div className="flex flex-col items-center text-center">
+        {/* Slashed design logo in preloader */}
+        <h1 className="text-4xl sm:text-5xl font-black uppercase tracking-[-0.04em] text-ink select-none animate-pulse flex flex-col items-center">
+          <span className="flex items-center">
+            RAS<span className="text-brand font-mono font-light mx-1">/</span>
+          </span>
+          <span className="text-brand-deep">CONNECT<span className="text-accent font-sans">.</span></span>
+        </h1>
+        {/* Subtitle / Loader bar */}
+        <div className="mt-8 flex flex-col items-center gap-2">
+          <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted">
+            SYNCING WITH NETWORK
+          </span>
+          <div className="h-[2px] w-24 bg-line overflow-hidden relative">
+            <div className="absolute top-0 bottom-0 left-0 bg-brand w-1/2 animate-[loading_1.5s_infinite_ease-in-out]" />
+          </div>
+        </div>
+      </div>
+      {/* Dynamic inline styles for the preloader slider animation */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes loading {
+          0% { left: -50%; }
+          100% { left: 100%; }
+        }
+      `}} />
+    </div>
+  );
 }
 
-async function getHeroEvents() {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/events?featured=true&limit=5`, { cache: "no-store" });
-    if (!res.ok) throw new Error();
-    return await res.json();
-  } catch (err) {
-    return [];
-  }
-}
+export default function HomePage() {
+  const [chapters, setChapters] = useState<any[]>([]);
+  const [latestEvents, setLatestEvents] = useState<any[]>([]);
+  const [heroEvents, setHeroEvents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-async function getLatestEvents() {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/events?limit=10`, { cache: "no-store" });
-    if (!res.ok) throw new Error();
-    return await res.json();
-  } catch (err) {
-    return [];
-  }
-}
+  useEffect(() => {
+    async function initData() {
+      try {
+        const [chaptersRes, eventsRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/chapters`),
+          fetch(`${API_BASE_URL}/api/events`)
+        ]);
 
-export default async function HomePage() {
-  const chapters = await getChapters();
-  const heroEvents = await getHeroEvents();
-  const latestEvents = await getLatestEvents();
+        if (chaptersRes.ok && eventsRes.ok) {
+          const chaptersData = await chaptersRes.json();
+          const eventsData = await eventsRes.json();
+
+          setChapters(chaptersData);
+          setLatestEvents(eventsData.slice(0, 8));
+          setHeroEvents(eventsData.filter((e: any) => e.isFeatured || e.featured).slice(0, 5));
+        }
+      } catch (err) {
+        console.error("Failed to load initial data", err);
+      } finally {
+        // Small timeout for smooth preloader exit transition
+        setTimeout(() => setLoading(false), 800);
+      }
+    }
+    initData();
+  }, []);
+
+  if (loading) {
+    return <Preloader />;
+  }
 
   const featuredChapters = chapters.slice(0, 5);
 
@@ -188,7 +223,6 @@ export default async function HomePage() {
           </Reveal>
         </div>
       </section>
-
     </>
   );
 }
