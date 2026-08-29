@@ -119,12 +119,12 @@ export function EventSearch({ events, chapters }: { events: RasEvent[]; chapters
       </p>
 
       {filteredEvents.length ? (
-        <div className="no-scrollbar -mx-4 flex snap-x snap-mandatory overflow-x-auto px-4 pb-4 pt-1 gap-6">
+        <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 pt-6">
           <AnimatePresence mode="popLayout" initial={false}>
             {filteredEvents.map((event, index) => (
               <div
                 key={event.slug}
-                className="shrink-0 w-[280px] sm:w-[300px] snap-start"
+                className="w-full"
               >
                 <EventCard event={event} index={index} />
               </div>
