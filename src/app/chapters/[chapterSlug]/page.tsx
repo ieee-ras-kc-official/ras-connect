@@ -6,6 +6,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { EmptyState } from "@/components/empty-state";
 import { EventCard } from "@/components/event-card";
 import { Reveal } from "@/components/reveal";
+import { API_BASE_URL } from "@/config/api";
 
 type ChapterPageProps = {
   params: Promise<{ chapterSlug: string }>;
@@ -13,7 +14,7 @@ type ChapterPageProps = {
 
 async function fetchChapter(slug: string) {
   try {
-    const res = await fetch(`http://localhost:5000/api/chapters/${slug}`, { cache: "no-store" });
+    const res = await fetch(`${API_BASE_URL}/api/chapters/${slug}`, { cache: "no-store" });
     if (!res.ok) return null;
     return await res.json();
   } catch (err) {
@@ -23,7 +24,7 @@ async function fetchChapter(slug: string) {
 
 async function fetchChapterEvents(chapterSlug: string) {
   try {
-    const res = await fetch(`http://localhost:5000/api/events?chapter=${chapterSlug}`, { cache: "no-store" });
+    const res = await fetch(`${API_BASE_URL}/api/events?chapter=${chapterSlug}`, { cache: "no-store" });
     if (!res.ok) return [];
     return await res.json();
   } catch (err) {
@@ -33,7 +34,7 @@ async function fetchChapterEvents(chapterSlug: string) {
 
 export async function generateStaticParams() {
   try {
-    const res = await fetch("http://localhost:5000/api/chapters");
+    const res = await fetch(`${API_BASE_URL}/api/chapters`);
     if (!res.ok) return [];
     const chapters = await res.json();
     return chapters.map((chapter: any) => ({ chapterSlug: chapter.slug }));

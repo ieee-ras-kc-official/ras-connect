@@ -4,6 +4,8 @@ import { motion } from "motion/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { API_BASE_URL } from "@/config/api";
+
 export default function LoginPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
@@ -23,7 +25,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/admin/login", {
+      const response = await fetch(`${API_BASE_URL}/api/admin/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

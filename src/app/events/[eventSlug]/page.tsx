@@ -10,6 +10,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { EventCard } from "@/components/event-card";
 import { ImageWithFallback } from "@/components/image-with-fallback";
 import { Reveal } from "@/components/reveal";
+import { API_BASE_URL } from "@/config/api";
 
 type EventPageProps = {
   params: Promise<{ eventSlug: string }>;
@@ -17,7 +18,7 @@ type EventPageProps = {
 
 async function fetchEvent(slug: string) {
   try {
-    const res = await fetch(`http://localhost:5000/api/events/${slug}`, { cache: "no-store" });
+    const res = await fetch(`${API_BASE_URL}/api/events/${slug}`, { cache: "no-store" });
     if (!res.ok) return null;
     return await res.json();
   } catch (err) {
@@ -27,7 +28,7 @@ async function fetchEvent(slug: string) {
 
 async function fetchChapter(slug: string) {
   try {
-    const res = await fetch(`http://localhost:5000/api/chapters/${slug}`, { cache: "no-store" });
+    const res = await fetch(`${API_BASE_URL}/api/chapters/${slug}`, { cache: "no-store" });
     if (!res.ok) return null;
     return await res.json();
   } catch (err) {
@@ -37,7 +38,7 @@ async function fetchChapter(slug: string) {
 
 async function fetchRelatedEvents(chapterSlug: string, currentEventSlug: string) {
   try {
-    const res = await fetch(`http://localhost:5000/api/events?chapter=${chapterSlug}`, { cache: "no-store" });
+    const res = await fetch(`${API_BASE_URL}/api/events?chapter=${chapterSlug}`, { cache: "no-store" });
     if (!res.ok) return [];
     const data = await res.json();
     return data.filter((e: any) => e.slug !== currentEventSlug).slice(0, 5);
@@ -48,7 +49,7 @@ async function fetchRelatedEvents(chapterSlug: string, currentEventSlug: string)
 
 export async function generateStaticParams() {
   try {
-    const res = await fetch("http://localhost:5000/api/events");
+    const res = await fetch(`${API_BASE_URL}/api/events`);
     if (!res.ok) return [];
     const events = await res.json();
     return events.map((event: any) => ({ eventSlug: event.slug }));

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SignOut, Plus, Trash, Calendar, MapPin, ShieldCheck, Image as ImageIcon, Key, List, Users } from "@phosphor-icons/react";
 import { useToast } from "@/components/toast";
+import { API_BASE_URL } from "@/config/api";
 
 type DbChapter = {
   slug: string;
@@ -116,7 +117,7 @@ export default function AdminDashboardPage() {
   const fetchSubadmins = async () => {
     const token = localStorage.getItem("admin_token");
     try {
-      const res = await fetch("http://localhost:5000/api/admin/subadmins", {
+      const res = await fetch(`${API_BASE_URL}/api/admin/subadmins`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -130,7 +131,7 @@ export default function AdminDashboardPage() {
 
   const fetchData = async (currentRole?: string, chapterSlug?: string) => {
     try {
-      const chaptersRes = await fetch("http://localhost:5000/api/chapters");
+      const chaptersRes = await fetch(`${API_BASE_URL}/api/chapters`);
       const chaptersData = await chaptersRes.json();
       setChapters(chaptersData);
       
@@ -146,7 +147,7 @@ export default function AdminDashboardPage() {
       }
 
       const token = localStorage.getItem("admin_token");
-      const eventsRes = await fetch("http://localhost:5000/api/events", {
+      const eventsRes = await fetch(`${API_BASE_URL}/api/events`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -171,7 +172,7 @@ export default function AdminDashboardPage() {
       }
 
       try {
-        const response = await fetch("http://localhost:5000/api/admin/verify", {
+        const response = await fetch(`${API_BASE_URL}/api/admin/verify`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -208,7 +209,7 @@ export default function AdminDashboardPage() {
     triggerConfirm(`Are you sure you want to delete sub-admin @${username}?`, async () => {
       const token = localStorage.getItem("admin_token");
       try {
-        const response = await fetch(`http://localhost:5000/api/admin/subadmins/${username}`, {
+        const response = await fetch(`${API_BASE_URL}/api/admin/subadmins/${username}`, {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -235,7 +236,7 @@ export default function AdminDashboardPage() {
     }
     const token = localStorage.getItem("admin_token");
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/subadmins/${username}/password`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/subadmins/${username}/password`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -276,8 +277,8 @@ export default function AdminDashboardPage() {
     const token = localStorage.getItem("admin_token");
     try {
       const url = editingChapterSlug
-        ? `http://localhost:5000/api/chapters/${editingChapterSlug}`
-        : "http://localhost:5000/api/chapters";
+        ? `${API_BASE_URL}/api/chapters/${editingChapterSlug}`
+        : `${API_BASE_URL}/api/chapters`;
       const method = editingChapterSlug ? "PUT" : "POST";
 
       const bodyData = editingChapterSlug
@@ -366,8 +367,8 @@ export default function AdminDashboardPage() {
     }
 
     const url = editingEventSlug
-      ? `http://localhost:5000/api/events/${editingEventSlug}`
-      : "http://localhost:5000/api/events";
+      ? `${API_BASE_URL}/api/events/${editingEventSlug}`
+      : `${API_BASE_URL}/api/events`;
     const method = editingEventSlug ? "PUT" : "POST";
 
     try {
@@ -409,7 +410,7 @@ export default function AdminDashboardPage() {
     triggerConfirm("Are you sure you want to delete this event?", async () => {
       const token = localStorage.getItem("admin_token");
       try {
-        const response = await fetch(`http://localhost:5000/api/events/${slug}`, {
+        const response = await fetch(`${API_BASE_URL}/api/events/${slug}`, {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -432,7 +433,7 @@ export default function AdminDashboardPage() {
   const handleVerifyEvent = async (slug: string, status: "verified" | "rejected", reason: string = "") => {
     const token = localStorage.getItem("admin_token");
     try {
-      const response = await fetch(`http://localhost:5000/api/events/${slug}`, {
+      const response = await fetch(`${API_BASE_URL}/api/events/${slug}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -490,7 +491,7 @@ export default function AdminDashboardPage() {
     triggerConfirm("Deleting this chapter will also delete all its associated events. Proceed?", async () => {
       const token = localStorage.getItem("admin_token");
       try {
-        const response = await fetch(`http://localhost:5000/api/chapters/${slug}`, {
+        const response = await fetch(`${API_BASE_URL}/api/chapters/${slug}`, {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,
