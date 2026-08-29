@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
-import { ArchiveBrowser } from "@/components/archive-browser";
-import { API_BASE_URL } from "@/config/api";
+import { ArchivePageClient } from "./ArchivePageClient";
 
 export const metadata: Metadata = {
   title: "Robotics Event Archive",
@@ -9,48 +7,7 @@ export const metadata: Metadata = {
     "Browse the historic archive of robotics competitions, technical exhibitions, and learning milestones documented by IEEE RAS student branch chapters in Kerala.",
 };
 
-async function getChapters() {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/chapters`, { cache: "no-store" });
-    if (!res.ok) throw new Error();
-    return await res.json();
-  } catch (err) {
-    return [];
-  }
-}
-
-async function getEvents() {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/events`, { cache: "no-store" });
-    if (!res.ok) throw new Error();
-    return await res.json();
-  } catch (err) {
-    return [];
-  }
-}
-
-function ArchiveFallback() {
-  return (
-    <div className="mt-12 animate-pulse">
-      <div className="h-36 rounded-[14px] bg-surface-strong" />
-      <div className="mt-14 h-10 w-28 rounded bg-surface-strong" />
-      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: 3 }).map((_, index) => (
-          <div key={index}>
-            <div className="aspect-[16/10] rounded-[14px] bg-surface-strong" />
-            <div className="mt-4 h-6 w-3/4 rounded bg-surface-strong" />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-export default async function ArchivePage() {
-  const chapters = await getChapters();
-  const events = await getEvents();
-  const archivedEvents = events.filter((event: any) => event.archived);
-
+export default function ArchivePage() {
   return (
     <section className="min-h-[calc(100dvh-var(--header-height))] py-16 md:py-24">
       <div className="page-container">
@@ -62,9 +19,7 @@ export default async function ArchivePage() {
             Past RAS Connect events, organized for easy browsing.
           </p>
         </div>
-        <Suspense fallback={<ArchiveFallback />}>
-          <ArchiveBrowser events={archivedEvents} chapters={chapters} />
-        </Suspense>
+        <ArchivePageClient />
       </div>
     </section>
   );

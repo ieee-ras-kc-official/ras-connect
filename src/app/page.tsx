@@ -8,6 +8,7 @@ import { HomeHero } from "@/components/home-hero";
 import { Reveal } from "@/components/reveal";
 import { EventCard } from "@/components/event-card";
 import { API_BASE_URL } from "@/config/api";
+import { isEventPassed } from "@/utils/date";
 
 function Preloader() {
   return (
@@ -59,9 +60,16 @@ export default function HomePage() {
           const chaptersData = await chaptersRes.json();
           const eventsData = await eventsRes.json();
 
+          const activeEvents = eventsData.filter((event: any) => {
+            const dateStr = typeof event.date === "string" 
+              ? event.date 
+              : event.date?.label || "";
+            return !event.archived && !isEventPassed(dateStr);
+          });
+
           setChapters(chaptersData);
-          setLatestEvents(eventsData.slice(0, 8));
-          setHeroEvents(eventsData.filter((e: any) => e.isFeatured || e.featured).slice(0, 5));
+          setLatestEvents(activeEvents.slice(0, 8));
+          setHeroEvents(activeEvents.filter((e: any) => e.isFeatured || e.featured).slice(0, 5));
         }
       } catch (err) {
         console.error("Failed to load initial data", err);

@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from "motion/react";
 import Link from "next/link";
 import { useState } from "react";
 import type { RasEvent } from "@/data/mock-data";
+import { isEventPassed } from "@/utils/date";
 
 type EventCardProps = {
   event: RasEvent;
@@ -20,8 +21,17 @@ export function EventCard({
   index = 0,
 }: EventCardProps) {
   const reduceMotion = useReducedMotion();
-  const isArchived = event.archived;
+  
+  const dateStr = typeof event.date === "string" 
+    ? event.date 
+    : (event.date as any)?.label || "";
+  const isArchived = event.archived || isEventPassed(dateStr);
+
+  const parsedYear = Date.parse(dateStr);
+  const eventYear = !isNaN(parsedYear) ? new Date(parsedYear).getFullYear() : ((event.date as any)?.year || "");
+
   const [failed, setFailed] = useState(false);
+
 
   const hasImage = event.image && !failed;
 
@@ -81,7 +91,7 @@ export function EventCard({
           <div className="flex justify-between items-center">
             {isArchived ? (
               <span className="font-mono text-[9px] uppercase tracking-wider text-muted/80 bg-surface-strong px-2 py-0.5 border border-line">
-                ARCHIVED {event.date?.year ? `// ${event.date.year}` : ""}
+                ARCHIVED {eventYear ? `// ${eventYear}` : ""}
               </span>
             ) : (
               <span className="font-mono text-[9px] uppercase tracking-wider text-white bg-brand px-2 py-0.5">
@@ -89,11 +99,11 @@ export function EventCard({
               </span>
             )}
             
-            {event.date?.label && (
+            {dateStr && (
               <span className={`font-mono text-[9px] uppercase tracking-wider ${
                 isArchived ? "text-muted/65" : "text-accent/80 font-bold"
               }`}>
-                {event.date.label}
+                {dateStr}
               </span>
             )}
           </div>
