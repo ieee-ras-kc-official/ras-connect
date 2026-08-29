@@ -5,23 +5,51 @@ import { ChapterExplorer } from "@/components/chapter-explorer";
 import { HomeHero } from "@/components/home-hero";
 import { Reveal } from "@/components/reveal";
 import { EventCard } from "@/components/event-card";
-import { chapters, events } from "@/data/mock-data";
 
 export const metadata: Metadata = {
   title: "Robotics events across Kerala",
 };
 
-export default function HomePage() {
-  const featuredChapters = chapters.filter((chapter) => chapter.featured).slice(0, 5);
-  
-  // Show 5 active events for verification of horizontal scroll
-  const featuredEvents = events
-    .filter((event) => !event.archived)
-    .slice(0, 5);
+async function getChapters() {
+  try {
+    const res = await fetch("http://localhost:5000/api/chapters", { cache: "no-store" });
+    if (!res.ok) throw new Error();
+    return await res.json();
+  } catch (err) {
+    return [];
+  }
+}
+
+async function getHeroEvents() {
+  try {
+    const res = await fetch("http://localhost:5000/api/events?featured=true&limit=5", { cache: "no-store" });
+    if (!res.ok) throw new Error();
+    return await res.json();
+  } catch (err) {
+    return [];
+  }
+}
+
+async function getLatestEvents() {
+  try {
+    const res = await fetch("http://localhost:5000/api/events?limit=10", { cache: "no-store" });
+    if (!res.ok) throw new Error();
+    return await res.json();
+  } catch (err) {
+    return [];
+  }
+}
+
+export default async function HomePage() {
+  const chapters = await getChapters();
+  const heroEvents = await getHeroEvents();
+  const latestEvents = await getLatestEvents();
+
+  const featuredChapters = chapters.slice(0, 5);
 
   return (
     <>
-      <HomeHero events={featuredEvents} />
+      <HomeHero events={heroEvents} chaptersCount={chapters.length} eventsCount={latestEvents.length} />
 
       {/* Explore All Events Section */}
       <section className="section-space bg-surface border-b border-line" aria-labelledby="events-heading">
@@ -56,16 +84,27 @@ export default function HomePage() {
               }
             `}} />
 
-            <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-6 no-scrollbar">
-              {featuredEvents.map((event, index) => (
-                <div 
-                  key={event.slug} 
-                  className="shrink-0 w-[280px] sm:w-[320px] md:w-[calc((100%-24px*3)/4)] snap-start h-full"
-                >
-                  <EventCard event={event} index={index} />
-                </div>
-              ))}
-            </div>
+            {latestEvents.length > 0 ? (
+              <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-6 no-scrollbar">
+                {latestEvents.map((event: any, index: number) => (
+                  <div 
+                    key={event.slug} 
+                    className="shrink-0 w-[280px] sm:w-[320px] md:w-[calc((100%-24px*3)/4)] snap-start h-full"
+                  >
+                    <EventCard event={event} index={index} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="border border-line p-8 bg-surface-soft text-center flex flex-col items-center justify-center min-h-[200px]">
+                <h3 className="font-mono text-sm font-bold uppercase tracking-widest text-ink mb-2">
+                  No Events Logged
+                </h3>
+                <p className="text-sm text-muted">
+                  No events have been published yet. Please check back later.
+                </p>
+              </div>
+            )}
           </div>
 
           <Reveal className="mt-9">

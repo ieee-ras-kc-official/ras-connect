@@ -1,12 +1,31 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { EventSearch } from "@/components/event-search";
-import { chapters, events } from "@/data/mock-data";
 
 export const metadata: Metadata = {
   title: "Events",
   description: "Browse all robotics and automation events across chapters.",
 };
+
+async function getChapters() {
+  try {
+    const res = await fetch("http://localhost:5000/api/chapters", { cache: "no-store" });
+    if (!res.ok) throw new Error();
+    return await res.json();
+  } catch (err) {
+    return [];
+  }
+}
+
+async function getEvents() {
+  try {
+    const res = await fetch("http://localhost:5000/api/events", { cache: "no-store" });
+    if (!res.ok) throw new Error();
+    return await res.json();
+  } catch (err) {
+    return [];
+  }
+}
 
 function SearchFallback() {
   return (
@@ -22,9 +41,9 @@ function SearchFallback() {
   );
 }
 
-export default function EventsPage() {
-  // Show all current/active events (not archived)
-  const currentEvents = events.filter((event) => !event.archived);
+export default async function EventsPage() {
+  const chapters = await getChapters();
+  const events = await getEvents();
 
   return (
     <section className="min-h-[calc(100dvh-var(--header-height))] py-16 md:py-24">
@@ -38,7 +57,7 @@ export default function EventsPage() {
           </p>
         </div>
         <Suspense fallback={<SearchFallback />}>
-          <EventSearch events={currentEvents} chapters={chapters} />
+          <EventSearch events={events} chapters={chapters} />
         </Suspense>
       </div>
     </section>

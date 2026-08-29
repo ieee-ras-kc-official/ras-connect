@@ -2,27 +2,50 @@
 
 import { motion } from "motion/react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!username.trim() || !password.trim()) {
       setError("Please fill in all fields.");
       return;
     }
 
-    // Mock verification
-    if (username === "admin" && password === "admin123") {
-      setError("");
-      setSuccess(true);
-    } else {
-      setError("Invalid username or password.");
-      setSuccess(false);
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await fetch("http://localhost:5000/api/admin/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        localStorage.setItem("admin_token", data.token);
+        setSuccess(true);
+        setTimeout(() => {
+          router.push("/admin/dashboard");
+        }, 1000);
+      } else {
+        setError(data.message || "Invalid username or password.");
+      }
+    } catch (err) {
+      setError("Failed to connect to authentication server.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -111,9 +134,10 @@ export default function LoginPage() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full mt-4 min-h-12 bg-ink text-white font-mono text-xs uppercase tracking-wider transition-colors hover:bg-brand rounded-none"
+              disabled={loading}
+              className="w-full mt-4 min-h-12 bg-ink text-white font-mono text-xs uppercase tracking-wider transition-colors hover:bg-brand rounded-none disabled:opacity-50"
             >
-              Sign In
+              {loading ? "Signing In..." : "Sign In"}
             </button>
           </form>
         )}

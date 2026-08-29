@@ -1,13 +1,22 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { ChapterSearch } from "@/components/chapter-search";
-import { chapters } from "@/data/mock-data";
 
 export const metadata: Metadata = {
   title: "Student Branch Chapters",
   description:
     "Explore the colleges and student communities contributing to RAS Connect.",
 };
+
+async function getChapters() {
+  try {
+    const res = await fetch("http://localhost:5000/api/chapters", { cache: "no-store" });
+    if (!res.ok) throw new Error();
+    return await res.json();
+  } catch (err) {
+    return [];
+  }
+}
 
 function SearchFallback() {
   return (
@@ -23,7 +32,9 @@ function SearchFallback() {
   );
 }
 
-export default function ChaptersPage() {
+export default async function ChaptersPage() {
+  const chapters = await getChapters();
+
   return (
     <section className="min-h-[calc(100dvh-var(--header-height))] py-16 md:py-24">
       <div className="page-container">

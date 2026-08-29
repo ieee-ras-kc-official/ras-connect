@@ -5,27 +5,48 @@ import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { EmptyState } from "@/components/empty-state";
 import { EventCard } from "@/components/event-card";
-import { ImageWithFallback } from "@/components/image-with-fallback";
 import { Reveal } from "@/components/reveal";
-import {
-  chapters,
-  getChapter,
-  getChapterEvents,
-} from "@/data/mock-data";
 
 type ChapterPageProps = {
   params: Promise<{ chapterSlug: string }>;
 };
 
-export function generateStaticParams() {
-  return chapters.map((chapter) => ({ chapterSlug: chapter.slug }));
+async function fetchChapter(slug: string) {
+  try {
+    const res = await fetch(`http://localhost:5000/api/chapters/${slug}`, { cache: "no-store" });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (err) {
+    return null;
+  }
+}
+
+async function fetchChapterEvents(chapterSlug: string) {
+  try {
+    const res = await fetch(`http://localhost:5000/api/events?chapter=${chapterSlug}`, { cache: "no-store" });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch (err) {
+    return [];
+  }
+}
+
+export async function generateStaticParams() {
+  try {
+    const res = await fetch("http://localhost:5000/api/chapters");
+    if (!res.ok) return [];
+    const chapters = await res.json();
+    return chapters.map((chapter: any) => ({ chapterSlug: chapter.slug }));
+  } catch (err) {
+    return [];
+  }
 }
 
 export async function generateMetadata({
   params,
 }: ChapterPageProps): Promise<Metadata> {
   const { chapterSlug } = await params;
-  const chapter = getChapter(chapterSlug);
+  const chapter = await fetchChapter(chapterSlug);
   if (!chapter) return {};
   return {
     title: chapter.name,
@@ -35,11 +56,12 @@ export async function generateMetadata({
 
 export default async function ChapterPage({ params }: ChapterPageProps) {
   const { chapterSlug } = await params;
-  const chapter = getChapter(chapterSlug);
+  const chapter = await fetchChapter(chapterSlug);
   if (!chapter) notFound();
 
-  const currentEvents = getChapterEvents(chapter.slug, false);
-  const archivedEvents = getChapterEvents(chapter.slug, true);
+  const events = await fetchChapterEvents(chapter.slug);
+  const currentEvents = events.filter((event: any) => !event.archived);
+  const archivedEvents = events.filter((event: any) => event.archived);
 
   return (
     <>
@@ -96,7 +118,7 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
 
           {currentEvents.length ? (
             <div className="no-scrollbar -mx-4 flex snap-x snap-mandatory overflow-x-auto px-4 pb-4 pt-1 gap-6">
-              {currentEvents.map((event, index) => (
+              {currentEvents.map((event: any, index: number) => (
                 <div
                   key={event.slug}
                   className="shrink-0 w-[280px] sm:w-[300px] snap-start"

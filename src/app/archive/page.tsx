@@ -1,12 +1,31 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { ArchiveBrowser } from "@/components/archive-browser";
-import { chapters, events } from "@/data/mock-data";
 
 export const metadata: Metadata = {
   title: "Event archive",
   description: "Past RAS Connect events, organized for easy browsing.",
 };
+
+async function getChapters() {
+  try {
+    const res = await fetch("http://localhost:5000/api/chapters", { cache: "no-store" });
+    if (!res.ok) throw new Error();
+    return await res.json();
+  } catch (err) {
+    return [];
+  }
+}
+
+async function getEvents() {
+  try {
+    const res = await fetch("http://localhost:5000/api/events", { cache: "no-store" });
+    if (!res.ok) throw new Error();
+    return await res.json();
+  } catch (err) {
+    return [];
+  }
+}
 
 function ArchiveFallback() {
   return (
@@ -25,8 +44,10 @@ function ArchiveFallback() {
   );
 }
 
-export default function ArchivePage() {
-  const archivedEvents = events.filter((event) => event.archived);
+export default async function ArchivePage() {
+  const chapters = await getChapters();
+  const events = await getEvents();
+  const archivedEvents = events.filter((event: any) => event.archived);
 
   return (
     <section className="min-h-[calc(100dvh-var(--header-height))] py-16 md:py-24">

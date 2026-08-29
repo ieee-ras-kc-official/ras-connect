@@ -10,7 +10,7 @@ import { useDeferredValue, useMemo, useTransition } from "react";
 import { EventCard } from "@/components/event-card";
 import type { RasEvent, Chapter } from "@/data/mock-data";
 
-export function EventSearch({ events, chapters }: { events: RasEvent[]; chapters: Chapter[] }) {
+export function EventSearch({ events, chapters }: { events: any[]; chapters: any[] }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -20,6 +20,19 @@ export function EventSearch({ events, chapters }: { events: RasEvent[]; chapters
   const query = searchParams.get("q") ?? "";
   const selectedChapter = searchParams.get("chapter") ?? "";
   const deferredQuery = useDeferredValue(query);
+
+  if (events.length === 0) {
+    return (
+      <div className="mt-12 border border-line p-8 bg-surface-soft text-center flex flex-col items-center justify-center min-h-[240px]">
+        <h3 className="font-mono text-sm font-bold uppercase tracking-widest text-ink mb-2">
+          No Events Logged
+        </h3>
+        <p className="text-sm text-muted">
+          No events have been published yet. Please check back later or use the admin console to add events.
+        </p>
+      </div>
+    );
+  }
 
   const filteredEvents = useMemo(() => {
     let result = events;

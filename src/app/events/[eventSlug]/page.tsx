@@ -10,46 +10,75 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { EventCard } from "@/components/event-card";
 import { ImageWithFallback } from "@/components/image-with-fallback";
 import { Reveal } from "@/components/reveal";
-import {
-  events,
-  getEvent,
-  getEventChapter,
-} from "@/data/mock-data";
 
 type EventPageProps = {
   params: Promise<{ eventSlug: string }>;
 };
 
-export function generateStaticParams() {
-  return events.map((event) => ({ eventSlug: event.slug }));
+async function fetchEvent(slug: string) {
+  try {
+    const res = await fetch(`http://localhost:5000/api/events/${slug}`, { cache: "no-store" });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (err) {
+    return null;
+  }
+}
+
+async function fetchChapter(slug: string) {
+  try {
+    const res = await fetch(`http://localhost:5000/api/chapters/${slug}`, { cache: "no-store" });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (err) {
+    return null;
+  }
+}
+
+async function fetchRelatedEvents(chapterSlug: string, currentEventSlug: string) {
+  try {
+    const res = await fetch(`http://localhost:5000/api/events?chapter=${chapterSlug}`, { cache: "no-store" });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.filter((e: any) => e.slug !== currentEventSlug).slice(0, 5);
+  } catch (err) {
+    return [];
+  }
+}
+
+export async function generateStaticParams() {
+  try {
+    const res = await fetch("http://localhost:5000/api/events");
+    if (!res.ok) return [];
+    const events = await res.json();
+    return events.map((event: any) => ({ eventSlug: event.slug }));
+  } catch (err) {
+    return [];
+  }
 }
 
 export async function generateMetadata({
   params,
 }: EventPageProps): Promise<Metadata> {
   const { eventSlug } = await params;
-  const event = getEvent(eventSlug);
+  const event = await fetchEvent(eventSlug);
   if (!event) return {};
   return {
     title: event.name,
-    description: event.description[0],
+    description: event.description && event.description[0] ? event.description[0] : "",
   };
 }
 
 export default async function EventPage({ params }: EventPageProps) {
   const { eventSlug } = await params;
-  const event = getEvent(eventSlug);
+  const event = await fetchEvent(eventSlug);
   if (!event) notFound();
-  const chapter = getEventChapter(event);
+
+  const chapter = await fetchChapter(event.chapterSlug);
   if (!chapter) notFound();
 
-  const relatedEvents = events
-    .filter(
-      (candidate) =>
-        candidate.chapterSlug === chapter.slug && candidate.slug !== event.slug,
-    )
-    .slice(0, 5);
-  const gallery = event.gallery.slice(0, 3);
+  const relatedEvents = await fetchRelatedEvents(chapter.slug, event.slug);
+  const gallery = event.gallery || [];
 
   return (
     <>
@@ -68,8 +97,8 @@ export default async function EventPage({ params }: EventPageProps) {
             <Reveal className="lg:col-span-4 flex justify-center lg:justify-start">
               <div className="relative aspect-square w-full max-w-[340px] overflow-hidden border border-line bg-surface-soft rounded-none flex items-center justify-center">
                 <ImageWithFallback
-                  src={event.image}
-                  alt={event.imageAlt}
+                  src={event.image || "/card1.jpeg"}
+                  alt={event.imageAlt || event.name}
                   sizes="(max-width: 1023px) 100vw, 30vw"
                   priority
                   className="object-contain w-full h-full p-2"
@@ -102,7 +131,7 @@ export default async function EventPage({ params }: EventPageProps) {
                         Date
                       </dt>
                       <dd className="mt-0.5 text-xs font-bold text-ink truncate">
-                        <time dateTime={event.date.iso}>{event.date.label}</time>
+                        {typeof event.date === "string" ? event.date : event.date.label}
                       </dd>
                     </div>
                   </div>
@@ -127,7 +156,7 @@ export default async function EventPage({ params }: EventPageProps) {
                   About the event
                 </h2>
                 <div className="mt-4 space-y-4 text-sm leading-6 text-muted">
-                  {event.description.map((paragraph) => (
+                  {event.description && event.description.map((paragraph: string) => (
                     <p key={paragraph}>{paragraph}</p>
                   ))}
                 </div>
@@ -143,7 +172,7 @@ export default async function EventPage({ params }: EventPageProps) {
                 </h2>
               </Reveal>
               <div className="mt-8 grid gap-4 md:grid-cols-12 md:grid-rows-2">
-                {gallery.map((image, index) => (
+                {gallery.map((image: any, index: number) => (
                   <Reveal
                     key={image.src}
                     delay={index * 0.05}
@@ -186,7 +215,7 @@ export default async function EventPage({ params }: EventPageProps) {
               </Link>
             </div>
             <div className="mt-6 no-scrollbar -mx-4 flex snap-x snap-mandatory overflow-x-auto px-4 pb-4 pt-1 gap-6">
-              {relatedEvents.map((related, index) => (
+              {relatedEvents.map((related: any, index: number) => (
                 <div
                   key={related.slug}
                   className="shrink-0 w-[280px] sm:w-[300px] snap-start"

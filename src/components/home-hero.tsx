@@ -9,47 +9,47 @@ import { events as allEvents, chapters as allChapters, type RasEvent } from "@/d
 
 type HomeHeroProps = {
   events?: RasEvent[];
+  chaptersCount?: number;
+  eventsCount?: number;
 };
 
-export function HomeHero({ events }: HomeHeroProps) {
+export function HomeHero({ events, chaptersCount, eventsCount }: HomeHeroProps) {
   const reduceMotion = useReducedMotion();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(1); // 1 = right, -1 = left
   const [isHovered, setIsHovered] = useState(false);
 
-  // Default to first 4 featured, unarchived events if none passed
-  const displayEvents = events ?? allEvents
-    .filter((event) => event.featured && !event.archived)
-    .slice(0, 4);
+  // Default to empty array if no events passed (removing mock fallbacks!)
+  const displayEvents = events && events.length > 0 ? events : [];
 
   const activeEvent = displayEvents[currentIndex];
 
   const handleNext = () => {
+    if (displayEvents.length === 0) return;
     setDirection(1);
     setCurrentIndex((prev) => (prev + 1) % displayEvents.length);
   };
 
   const handlePrev = () => {
+    if (displayEvents.length === 0) return;
     setDirection(-1);
     setCurrentIndex((prev) => (prev - 1 + displayEvents.length) % displayEvents.length);
   };
 
   const handleDotClick = (index: number) => {
-    if (index === currentIndex) return;
+    if (displayEvents.length === 0 || index === currentIndex) return;
     setDirection(index > currentIndex ? 1 : -1);
     setCurrentIndex(index);
   };
 
   // Auto-play sliding, pausing on hover
   useEffect(() => {
-    if (isHovered || reduceMotion) return;
+    if (displayEvents.length === 0 || isHovered || reduceMotion) return;
     const timer = setInterval(() => {
       handleNext();
     }, 5000);
     return () => clearInterval(timer);
-  }, [currentIndex, isHovered, reduceMotion]);
-
-  if (!activeEvent) return null;
+  }, [currentIndex, isHovered, reduceMotion, displayEvents.length]);
 
   const entrance = reduceMotion
     ? {}
@@ -142,7 +142,7 @@ export function HomeHero({ events }: HomeHeroProps) {
           >
             <div>
               <span className="font-mono text-3xl font-extrabold tracking-tight text-brand">
-                {String(allChapters.length).padStart(2, "0")}
+                {String(chaptersCount ?? allChapters.length).padStart(2, "0")}
               </span>
               <span className="block font-mono text-[9px] font-bold uppercase tracking-widest text-muted mt-1">
                 // SB CHAPTERS ACTIVE
@@ -150,7 +150,7 @@ export function HomeHero({ events }: HomeHeroProps) {
             </div>
             <div className="border-l border-line pl-6">
               <span className="font-mono text-3xl font-extrabold tracking-tight text-brand">
-                {String(allEvents.length).padStart(2, "0")}
+                {String(eventsCount ?? allEvents.length).padStart(2, "0")}
               </span>
               <span className="block font-mono text-[9px] font-bold uppercase tracking-widest text-muted mt-1">
                 // EVENTS LOGGED
@@ -188,96 +188,110 @@ export function HomeHero({ events }: HomeHeroProps) {
         >
           {/* Centered card container */}
           <div className="w-full max-w-[380px] mx-auto">
-            {/* Slider Header */}
-            <div className="flex items-center justify-between border-b border-line pb-2 mb-4">
-              <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-muted/70">
-                Featured Events // Slide
-              </span>
-              <div className="flex items-center gap-4">
-                {displayEvents.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => handleDotClick(i)}
-                    className={`font-mono text-xs transition-all duration-200 cursor-pointer ${
-                      i === currentIndex
-                        ? "text-brand font-bold border-b border-brand pb-0.5"
-                        : "text-muted/60 hover:text-ink"
-                    }`}
-                  >
-                    {(i + 1).toString().padStart(2, "0")}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Animated Slider Container */}
-            <div className="relative overflow-hidden w-full min-h-[350px] sm:min-h-[425px]">
-              <AnimatePresence initial={false} custom={direction} mode="wait">
-                <motion.div
-                  key={currentIndex}
-                  custom={direction}
-                  variants={slideVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{
-                    x: { type: "spring", stiffness: 280, damping: 30 },
-                    opacity: { duration: 0.16 }
-                  }}
-                  className="absolute inset-0 flex flex-col"
-                >
-                  {/* Image Container with Sharp Corners */}
-                  <div className="relative aspect-square w-full overflow-hidden bg-surface-soft border border-line rounded-none">
-                    <Link href={`/events/${activeEvent.slug}`} className="group block w-full h-full">
-                      <ImageWithFallback
-                        src={activeEvent.image}
-                        alt={activeEvent.imageAlt}
-                        sizes="(max-width: 767px) 100vw, 50vw"
-                        priority
-                        className="object-cover w-full h-full transition-transform duration-500 ease-brand motion-safe:group-hover:scale-[1.03]"
-                      />
-                    </Link>
+            {displayEvents.length > 0 ? (
+              <>
+                {/* Slider Header */}
+                <div className="flex items-center justify-between border-b border-line pb-2 mb-4">
+                  <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-muted/70">
+                    Featured Events // Slide
+                  </span>
+                  <div className="flex items-center gap-4">
+                    {displayEvents.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => handleDotClick(i)}
+                        className={`font-mono text-xs transition-all duration-200 cursor-pointer ${
+                          i === currentIndex
+                            ? "text-brand font-bold border-b border-brand pb-0.5"
+                            : "text-muted/60 hover:text-ink"
+                        }`}
+                      >
+                        {(i + 1).toString().padStart(2, "0")}
+                      </button>
+                    ))}
                   </div>
-                  
-                  {/* Event Name Text with Sharp Swiss layout */}
-                  <div className="pt-3 flex items-start gap-4">
-                    <span className="font-mono text-[11px] font-medium tracking-wider text-muted/70 mt-1.5">
-                      {(currentIndex + 1).toString().padStart(2, "0")}.
-                    </span>
-                    <div className="flex-1">
-                      <Link href={`/events/${activeEvent.slug}`} className="group inline-block">
-                        <h3 className="text-pretty text-xl font-extrabold leading-tight tracking-tight text-ink uppercase group-hover:text-brand transition-colors duration-150 md:text-2xl">
-                          {activeEvent.name}
-                        </h3>
-                      </Link>
-                    </div>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
-            </div>
+                </div>
 
-            {/* Slider Bottom Controls */}
-            <div className="mt-4 flex items-center justify-between border-t border-line pt-4">
-              <div className="flex gap-2">
-                <button
-                  onClick={handlePrev}
-                  aria-label="Previous event"
-                  className="inline-flex size-10 items-center justify-center border border-ink bg-transparent text-ink hover:bg-ink hover:text-white transition-colors duration-150 rounded-none cursor-pointer"
-                >
-                  <ArrowLeftIcon size={16} />
-                </button>
-                <button
-                  onClick={handleNext}
-                  aria-label="Next event"
-                  className="inline-flex size-10 items-center justify-center border border-ink bg-transparent text-ink hover:bg-ink hover:text-white transition-colors duration-150 rounded-none cursor-pointer"
-                >
-                  <ArrowRightIcon size={16} />
-                </button>
+                {/* Animated Slider Container */}
+                <div className="relative overflow-hidden w-full min-h-[350px] sm:min-h-[425px]">
+                  <AnimatePresence initial={false} custom={direction} mode="wait">
+                    <motion.div
+                      key={currentIndex}
+                      custom={direction}
+                      variants={slideVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{
+                        x: { type: "spring", stiffness: 280, damping: 30 },
+                        opacity: { duration: 0.16 }
+                      }}
+                      className="absolute inset-0 flex flex-col"
+                    >
+                      {/* Image Container with Sharp Corners */}
+                      <div className="relative aspect-square w-full overflow-hidden bg-surface-soft border border-line rounded-none">
+                        <Link href={`/events/${activeEvent.slug}`} className="group block w-full h-full">
+                          <ImageWithFallback
+                            src={activeEvent.image}
+                            alt={activeEvent.imageAlt}
+                            sizes="(max-width: 767px) 100vw, 50vw"
+                            priority
+                            className="object-cover w-full h-full transition-transform duration-500 ease-brand motion-safe:group-hover:scale-[1.03]"
+                          />
+                        </Link>
+                      </div>
+                      
+                      {/* Event Name Text with Sharp Swiss layout */}
+                      <div className="pt-3 flex items-start gap-4">
+                        <span className="font-mono text-[11px] font-medium tracking-wider text-muted/70 mt-1.5">
+                          {(currentIndex + 1).toString().padStart(2, "0")}.
+                        </span>
+                        <div className="flex-1">
+                          <Link href={`/events/${activeEvent.slug}`} className="group inline-block">
+                            <h3 className="text-pretty text-xl font-extrabold leading-tight tracking-tight text-ink uppercase group-hover:text-brand transition-colors duration-150 md:text-2xl">
+                              {activeEvent.name}
+                            </h3>
+                          </Link>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+
+                {/* Slider Bottom Controls */}
+                <div className="mt-4 flex items-center justify-between border-t border-line pt-4">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handlePrev}
+                      aria-label="Previous event"
+                      className="inline-flex size-10 items-center justify-center border border-ink bg-transparent text-ink hover:bg-ink hover:text-white transition-colors duration-150 rounded-none cursor-pointer"
+                    >
+                      <ArrowLeftIcon size={16} />
+                    </button>
+                    <button
+                      onClick={handleNext}
+                      aria-label="Next event"
+                      className="inline-flex size-10 items-center justify-center border border-ink bg-transparent text-ink hover:bg-ink hover:text-white transition-colors duration-150 rounded-none cursor-pointer"
+                    >
+                      <ArrowRightIcon size={16} />
+                    </button>
+                  </div>
+                  <div className="font-mono text-xs font-semibold text-muted/70">
+                    {currentIndex + 1} / {displayEvents.length}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="border border-line p-8 bg-surface-soft text-center flex flex-col items-center justify-center min-h-[300px]">
+                <span className="inline-block size-3 bg-brand mb-4" />
+                <h3 className="font-mono text-xs font-bold uppercase tracking-widest text-ink mb-2">
+                  // No Featured Events
+                </h3>
+                <p className="text-xs font-mono text-muted leading-relaxed max-w-[240px]">
+                  Use the administrative console to publish events and highlight student chapters.
+                </p>
               </div>
-              <div className="font-mono text-xs font-semibold text-muted/70">
-                {currentIndex + 1} / {displayEvents.length}
-              </div>
-            </div>
+            )}
           </div>
         </div>
 

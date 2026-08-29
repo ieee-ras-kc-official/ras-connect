@@ -5,8 +5,21 @@ import { motion, useReducedMotion } from "motion/react";
 import Link from "next/link";
 import type { Chapter } from "@/data/mock-data";
 
-export function ChapterExplorer({ chapters }: { chapters: Chapter[] }) {
+export function ChapterExplorer({ chapters }: { chapters: any[] }) {
   const reduceMotion = useReducedMotion();
+
+  if (chapters.length === 0) {
+    return (
+      <div className="mt-12 border border-line p-8 bg-surface-soft text-center flex flex-col items-center justify-center min-h-[190px]">
+        <h3 className="font-mono text-sm font-bold uppercase tracking-widest text-ink mb-2">
+          No Chapters Created
+        </h3>
+        <p className="text-sm text-muted">
+          No Student Branch Chapters have been added yet.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="relative">

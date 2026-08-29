@@ -21,6 +21,19 @@ export function ChapterSearch({ chapters }: { chapters: Chapter[] }) {
   const query = searchParams.get("q") ?? "";
   const deferredQuery = useDeferredValue(query);
 
+  if (chapters.length === 0) {
+    return (
+      <div className="mt-12 border border-line p-8 bg-surface-soft text-center flex flex-col items-center justify-center min-h-[240px]">
+        <h3 className="font-mono text-sm font-bold uppercase tracking-widest text-ink mb-2">
+          No Chapters Logged
+        </h3>
+        <p className="text-sm text-muted">
+          No Student Branch Chapters have been created yet. Use the admin console to add chapters.
+        </p>
+      </div>
+    );
+  }
+
   const results = useMemo(() => {
     const normalized = deferredQuery.trim().toLocaleLowerCase();
     if (!normalized) return chapters;
