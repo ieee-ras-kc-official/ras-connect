@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { ArchiveBrowser } from "@/components/archive-browser";
+import { API_BASE_URL } from "@/config/api";
 
 export const metadata: Metadata = {
   title: "Event archive",
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 
 async function getChapters() {
   try {
-    const res = await fetch("http://localhost:5000/api/chapters", { cache: "no-store" });
+    const res = await fetch(`${API_BASE_URL}/api/chapters`, { cache: "no-store" });
     if (!res.ok) throw new Error();
     return await res.json();
   } catch (err) {
@@ -19,7 +20,7 @@ async function getChapters() {
 
 async function getEvents() {
   try {
-    const res = await fetch("http://localhost:5000/api/events", { cache: "no-store" });
+    const res = await fetch(`${API_BASE_URL}/api/events`, { cache: "no-store" });
     if (!res.ok) throw new Error();
     return await res.json();
   } catch (err) {

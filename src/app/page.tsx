@@ -5,6 +5,7 @@ import { ChapterExplorer } from "@/components/chapter-explorer";
 import { HomeHero } from "@/components/home-hero";
 import { Reveal } from "@/components/reveal";
 import { EventCard } from "@/components/event-card";
+import { API_BASE_URL } from "@/config/api";
 
 export const metadata: Metadata = {
   title: "Robotics events across Kerala",
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
 
 async function getChapters() {
   try {
-    const res = await fetch("http://localhost:5000/api/chapters", { cache: "no-store" });
+    const res = await fetch(`${API_BASE_URL}/api/chapters`, { cache: "no-store" });
     if (!res.ok) throw new Error();
     return await res.json();
   } catch (err) {
@@ -22,7 +23,7 @@ async function getChapters() {
 
 async function getHeroEvents() {
   try {
-    const res = await fetch("http://localhost:5000/api/events?featured=true&limit=5", { cache: "no-store" });
+    const res = await fetch(`${API_BASE_URL}/api/events?featured=true&limit=5`, { cache: "no-store" });
     if (!res.ok) throw new Error();
     return await res.json();
   } catch (err) {
@@ -32,7 +33,7 @@ async function getHeroEvents() {
 
 async function getLatestEvents() {
   try {
-    const res = await fetch("http://localhost:5000/api/events?limit=10", { cache: "no-store" });
+    const res = await fetch(`${API_BASE_URL}/api/events?limit=10`, { cache: "no-store" });
     if (!res.ok) throw new Error();
     return await res.json();
   } catch (err) {

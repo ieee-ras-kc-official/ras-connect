@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { ChapterSearch } from "@/components/chapter-search";
+import { API_BASE_URL } from "@/config/api";
 
 export const metadata: Metadata = {
   title: "Student Branch Chapters",
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
 
 async function getChapters() {
   try {
-    const res = await fetch("http://localhost:5000/api/chapters", { cache: "no-store" });
+    const res = await fetch(`${API_BASE_URL}/api/chapters`, { cache: "no-store" });
     if (!res.ok) throw new Error();
     return await res.json();
   } catch (err) {

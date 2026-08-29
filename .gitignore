@@ -13,6 +13,6 @@
 .DS_Store
 .env*
 !.env.example
-
+.env
 # typescript
 *.tsbuildinfo
