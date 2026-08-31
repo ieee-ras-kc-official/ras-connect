@@ -1,0 +1,15 @@
+RewriteEngine On
+RewriteBase /
+
+# Force trailing slash on all directories/paths (excluding files)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !(.*)/$
+RewriteRule ^(.*)$ /$1/ [L,R=301]
+
+# Serve physical files and directories directly if they exist
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Fallback to index.html for client-side routing
+RewriteRule ^ index.html [L]
