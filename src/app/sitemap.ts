@@ -4,7 +4,7 @@ import { API_BASE_URL } from "@/config/api";
 export const dynamic = "force-static";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://rasconnect.ieee-ras-kerala.org";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://rasconnect.ras.ieeekerala.org";
 
   // Base routes
   const routes = ["", "/events", "/chapters", "/archive"].map((route) => ({

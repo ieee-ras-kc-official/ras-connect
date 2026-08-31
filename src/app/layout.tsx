@@ -9,7 +9,7 @@ import { PageRevealWrapper } from "@/components/page-reveal-wrapper";
 import { ToastProvider } from "@/components/toast";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://rasconnect.ieee-ras-kerala.org"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://rasconnect.ras.ieeekerala.org"),
   title: {
     default: "RAS Connect | IEEE RAS Kerala Chapter - Robotics & Automation",
     template: "%s | RAS Connect",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://rasconnect.ieee-ras-kerala.org",
+    url: "https://rasconnect.ras.ieeekerala.org",
     title: "RAS Connect | IEEE RAS Kerala Chapter",
     description:
       "A statewide digital showcase of robotics and automation events led by IEEE RAS student chapters across Kerala.",
