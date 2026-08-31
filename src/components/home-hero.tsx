@@ -145,7 +145,7 @@ export function HomeHero({ events, chaptersCount, eventsCount }: HomeHeroProps) 
                 {String(chaptersCount ?? allChapters.length).padStart(2, "0")}
               </span>
               <span className="block font-mono text-[9px] font-bold uppercase tracking-widest text-muted mt-1">
-                // SB CHAPTERS ACTIVE
+                SB CHAPTERS ACTIVE
               </span>
             </div>
             <div className="border-l border-line pl-6">
@@ -153,7 +153,7 @@ export function HomeHero({ events, chaptersCount, eventsCount }: HomeHeroProps) 
                 {String(eventsCount ?? allEvents.length).padStart(2, "0")}
               </span>
               <span className="block font-mono text-[9px] font-bold uppercase tracking-widest text-muted mt-1">
-                // EVENTS LOGGED
+                EVENTS LOGGED
               </span>
             </div>
           </motion.div>
@@ -193,7 +193,7 @@ export function HomeHero({ events, chaptersCount, eventsCount }: HomeHeroProps) 
                 {/* Slider Header */}
                 <div className="flex items-center justify-between border-b border-line pb-2 mb-4">
                   <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-muted/70">
-                    Featured Events // Slide
+                    Featured Events
                   </span>
                   <div className="flex items-center gap-4">
                     {displayEvents.map((_, i) => (
