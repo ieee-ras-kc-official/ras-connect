@@ -20,7 +20,7 @@ export function SiteFooter() {
           <div className="mt-6 flex items-center gap-3">
             <span className="inline-block size-2 rounded-none bg-emerald-500 animate-pulse" />
             <span className="font-mono text-[10px] uppercase tracking-widest text-muted">
-              All systems operational // IEEE RAS KC
+              All systems operational | IEEE RAS KC
             </span>
           </div>
         </div>
@@ -30,7 +30,7 @@ export function SiteFooter() {
           {/* Col 2: Navigation (Index) */}
           <div className="md:col-span-5 md:border-l border-line md:pl-8">
             <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-brand">
-              // Directory
+              Directory
             </h4>
             <ul className="mt-4 space-y-3 text-sm">
               <li>
@@ -59,21 +59,21 @@ export function SiteFooter() {
           {/* Col 3: Connections */}
           <div className="md:col-span-7 border-l border-line pl-6 md:pl-8">
             <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-brand">
-              // Connections
+              Connections
             </h4>
             <p className="mt-4 text-xs text-muted leading-relaxed hidden sm:block md:hidden lg:block">
               Have questions about events or chapters? Reach out to us.
             </p>
             <div className="mt-4 flex flex-col gap-2.5 font-mono text-[10px] sm:text-[11px] uppercase tracking-wider text-muted">
-              <a href="https://www.ieee-ras.org/" target="_blank" rel="noopener noreferrer" className="hover:text-brand transition-colors w-fit block truncate">
-                W: ieee-ras.org
+              <a href="https://ras.ieeekerala.org/" target="_blank" rel="noopener noreferrer" className="hover:text-brand transition-colors w-fit block truncate">
+                W: ras.ieeekerala.org
               </a>
             </div>
 
             {/* Social Links Block */}
             <div className="mt-6 border-t border-line/60 pt-4">
               <h5 className="font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-brand/80 mb-2.5">
-                // Social Channels
+                Social Channels
               </h5>
               <div className="grid grid-cols-2 gap-x-4 gap-y-2 font-mono text-[10px] uppercase tracking-wider">
                 <a href="https://www.linkedin.com/company/ieee-robotics-and-automation-society-kerala-chapter/" target="_blank" rel="noopener noreferrer" className="text-muted hover:text-brand transition-colors flex items-center gap-1.5 w-fit">
