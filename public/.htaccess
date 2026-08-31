@@ -3,6 +3,10 @@ Options -Indexes
 RewriteEngine On
 RewriteBase /
 
+# Force HTTPS redirect
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
 # Force trailing slash on all directories/paths (excluding files)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_URI} !(.*)/$
