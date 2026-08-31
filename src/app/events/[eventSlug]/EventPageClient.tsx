@@ -147,18 +147,23 @@ export function EventPageClient({ eventSlug }: Props) {
                 </div>
               </dl>
 
-              {event.registrationLink ? (
-                <div className="mt-6">
-                  <a
-                    href={event.registrationLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex h-12 items-center justify-center border border-ink bg-ink px-8 text-xs font-mono font-bold uppercase tracking-wider text-white transition-colors duration-150 hover:bg-brand hover:border-brand rounded-none cursor-pointer"
-                  >
-                    Register Now
-                  </a>
-                </div>
-              ) : null}
+              {event.registrationLink ? (() => {
+                const targetUrl = event.registrationLink.startsWith("http://") || event.registrationLink.startsWith("https://")
+                  ? event.registrationLink
+                  : `https://${event.registrationLink}`;
+                return (
+                  <div className="mt-6">
+                    <a
+                      href={targetUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex h-12 items-center justify-center border border-ink bg-ink px-8 text-xs font-mono font-bold uppercase tracking-wider text-white transition-colors duration-150 hover:bg-brand hover:border-brand rounded-none cursor-pointer"
+                    >
+                      Register Now
+                    </a>
+                  </div>
+                );
+              })() : null}
 
               <section className="mt-8 border-t border-line pt-6" aria-labelledby="about-event-heading">
                 <h2 id="about-event-heading" className="text-xl font-bold uppercase tracking-tight text-ink">
