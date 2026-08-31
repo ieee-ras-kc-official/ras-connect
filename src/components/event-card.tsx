@@ -74,7 +74,7 @@ export function EventCard({
             <span className={`font-mono text-xs mt-0.5 transition-colors duration-200 ${
               isArchived ? "text-muted/50 group-hover:text-muted" : "text-brand/60 group-hover:text-brand"
             }`}>
-              // {(index + 1).toString().padStart(2, "0")}
+              {(index + 1).toString().padStart(2, "0")}
             </span>
             <h3 className={`text-pretty text-base font-black leading-snug tracking-tight uppercase transition-colors duration-150 ${
               isArchived 

@@ -52,7 +52,7 @@ export function ChapterExplorer({ chapters }: { chapters: any[] }) {
               <div>
                 <div className="flex justify-between items-start">
                   <span className="font-mono text-xs font-bold text-brand/60 group-hover:text-brand tracking-wider transition-colors duration-200">
-                    // {(index + 1).toString().padStart(2, "0")}
+                    {(index + 1).toString().padStart(2, "0")}
                   </span>
                   <ArrowRightIcon
                     size={16}
