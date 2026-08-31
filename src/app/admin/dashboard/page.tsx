@@ -30,6 +30,7 @@ type DbEvent = {
   archived: boolean;
   status?: "pending" | "verified" | "rejected";
   rejectionReason?: string;
+  registrationLink?: string;
 };
 
 export default function AdminDashboardPage() {
@@ -67,6 +68,7 @@ export default function AdminDashboardPage() {
   const [eventDate, setEventDate] = useState("");
   const [eventLocation, setEventLocation] = useState("");
   const [eventDesc, setEventDesc] = useState("");
+  const [eventRegistrationLink, setEventRegistrationLink] = useState("");
   const [eventImageFile, setEventImageFile] = useState<File | null>(null);
   const [editingEventImageUrl, setEditingEventImageUrl] = useState("");
   const [imagePreviewUrl, setImagePreviewUrl] = useState("");
@@ -362,6 +364,9 @@ export default function AdminDashboardPage() {
     formData.append("location", eventLocation);
     formData.append("description", eventDesc);
     formData.append("featured", "true"); // Always featured by default on dashboard upload
+    if (eventRegistrationLink) {
+      formData.append("registrationLink", eventRegistrationLink);
+    }
     if (eventImageFile) {
       formData.append("image", eventImageFile);
     }
@@ -386,6 +391,7 @@ export default function AdminDashboardPage() {
         setEventDate("");
         setEventLocation("");
         setEventDesc("");
+        setEventRegistrationLink("");
         setEventImageFile(null);
         setEditingEventImageUrl("");
         // Clear file input manually
@@ -465,6 +471,7 @@ export default function AdminDashboardPage() {
     setEventDate(event.date);
     setEventLocation(event.location);
     setEventDesc(event.description ? event.description[0] : "");
+    setEventRegistrationLink(event.registrationLink || "");
     setEditingEventImageUrl(event.image || "");
     if (role === "superadmin") {
       setEventChapter(event.chapterSlug);
@@ -481,6 +488,7 @@ export default function AdminDashboardPage() {
     setEventDate("");
     setEventLocation("");
     setEventDesc("");
+    setEventRegistrationLink("");
     setEventImageFile(null);
     setEditingEventImageUrl("");
     const fileInput = document.getElementById("event-image") as HTMLInputElement;
@@ -688,6 +696,16 @@ export default function AdminDashboardPage() {
                                     <MapPin size={13} />
                                     {event.location}
                                   </span>
+                                  {event.registrationLink && (
+                                    <span className="flex items-center gap-1">
+                                      <svg className="size-3 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                      </svg>
+                                      <a href={event.registrationLink} target="_blank" rel="noopener noreferrer" className="hover:underline font-bold text-brand uppercase">
+                                        Registration Link
+                                      </a>
+                                    </span>
+                                  )}
                                 </div>
                                 
                                 {event.description && event.description.length > 0 && event.description[0] && (
@@ -896,6 +914,19 @@ export default function AdminDashboardPage() {
                         placeholder="Details about the event..."
                         rows={2}
                         className="w-full bg-transparent py-2.5 border-b border-line text-sm text-ink outline-none focus:border-brand transition-colors resize-none rounded-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="font-mono text-[10px] uppercase tracking-widest text-muted block mb-1">
+                        Registration Link (Optional)
+                      </label>
+                      <input
+                        type="url"
+                        value={eventRegistrationLink}
+                        onChange={(e) => setEventRegistrationLink(e.target.value)}
+                        placeholder="https://example.com/register"
+                        className="w-full bg-transparent py-2.5 border-b border-line text-sm text-ink outline-none focus:border-brand transition-colors rounded-none"
                       />
                     </div>
 
