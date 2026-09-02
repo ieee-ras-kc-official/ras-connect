@@ -400,7 +400,13 @@ export default function AdminDashboardPage() {
 
         setEditingEventSlug(null);
 
-        toast.success(editingEventSlug ? "Event updated successfully." : "Event published successfully.");
+        toast.success(
+          role === "subadmin"
+            ? "Event request submitted to Main Admin for approval."
+            : editingEventSlug
+            ? "Event updated successfully."
+            : "Event created and published successfully."
+        );
         await fetchData();
       } else {
         toast.error(data.error || "Failed to save event.");
@@ -676,7 +682,7 @@ export default function AdminDashboardPage() {
                               {event.image && (
                                 <div className="size-20 bg-surface-soft border border-line shrink-0 overflow-hidden flex items-center justify-center">
                                   <img
-                                    src={event.image}
+                                    src={event.image ? (event.image.startsWith("/uploads/") ? `${API_BASE_URL}${event.image}` : event.image) : "/card1.jpeg"}
                                     alt={event.name}
                                     className="w-full h-full object-cover"
                                   />
@@ -972,7 +978,7 @@ export default function AdminDashboardPage() {
                         <div className="mt-3 relative border border-line p-2 bg-surface-soft flex flex-col items-center">
                           <span className="text-[10px] font-mono text-muted mb-2 uppercase tracking-wider">// Current Event Image</span>
                           <img
-                            src={editingEventImageUrl}
+                            src={editingEventImageUrl.startsWith("/uploads/") ? `${API_BASE_URL}${editingEventImageUrl}` : editingEventImageUrl}
                             alt="Current Event Image"
                             className="max-h-48 object-contain border border-line"
                           />
@@ -1000,7 +1006,7 @@ export default function AdminDashboardPage() {
                         ) : (
                           <>
                             <Plus size={14} />
-                            {editingEventSlug ? "Save Changes" : "Publish Event"}
+                            {role === "subadmin" ? "Submit Request to Admin" : editingEventSlug ? "Save Changes" : "Publish Event"}
                           </>
                         )}
                       </button>

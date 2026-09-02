@@ -7,6 +7,8 @@ import { useState } from "react";
 import type { RasEvent } from "@/data/mock-data";
 import { isEventPassed } from "@/utils/date";
 
+import { API_BASE_URL } from "@/config/api";
+
 type EventCardProps = {
   event: RasEvent;
   className?: string;
@@ -32,8 +34,12 @@ export function EventCard({
 
   const [failed, setFailed] = useState(false);
 
-
   const hasImage = event.image && !failed;
+  const imageSrc = hasImage
+    ? event.image!.startsWith("/uploads/")
+      ? `${API_BASE_URL}${event.image}`
+      : event.image!
+    : "/card1.jpeg";
 
   return (
     <motion.article
@@ -60,7 +66,7 @@ export function EventCard({
           {/* Image Wrapper */}
           <div className="relative aspect-square overflow-hidden bg-surface-soft border border-line shrink-0">
             <img
-              src={hasImage ? event.image! : "/card1.jpeg"}
+              src={imageSrc}
               alt={event.imageAlt || "Event poster"}
               className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-brand motion-safe:group-hover:scale-[1.03] ${
                 isArchived ? "grayscale opacity-75 group-hover:grayscale-0 group-hover:opacity-100" : ""
@@ -70,17 +76,17 @@ export function EventCard({
           </div>
 
           {/* Title and Index */}
-          <div className="mt-4 flex items-start gap-2.5">
-            <span className={`font-mono text-xs mt-0.5 transition-colors duration-200 ${
+          <div className="mt-4 flex items-center gap-2.5 min-w-0">
+            <span className={`font-mono text-xs transition-colors duration-200 shrink-0 ${
               isArchived ? "text-muted/50 group-hover:text-muted" : "text-brand/60 group-hover:text-brand"
             }`}>
               {(index + 1).toString().padStart(2, "0")}
             </span>
-            <h3 className={`text-pretty text-base font-black leading-snug tracking-tight uppercase transition-colors duration-150 ${
+            <h3 className={`text-sm font-bold uppercase transition-colors duration-150 truncate ${
               isArchived 
                 ? "text-muted group-hover:text-ink" 
                 : "text-ink group-hover:text-brand"
-            }`}>
+            }`} title={event.name}>
               {event.name}
             </h3>
           </div>

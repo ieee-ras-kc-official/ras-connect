@@ -60,16 +60,12 @@ export default function HomePage() {
           const chaptersData = await chaptersRes.json();
           const eventsData = await eventsRes.json();
 
-          const activeEvents = eventsData.filter((event: any) => {
-            const dateStr = typeof event.date === "string" 
-              ? event.date 
-              : event.date?.label || "";
-            return !event.archived && !isEventPassed(dateStr);
-          });
+          const activeEvents = eventsData.filter((event: any) => !event.archived);
 
           setChapters(chaptersData);
           setLatestEvents(activeEvents.slice(0, 8));
-          setHeroEvents(activeEvents.filter((e: any) => e.isFeatured || e.featured).slice(0, 5));
+          const featured = activeEvents.filter((e: any) => e.isFeatured || e.featured);
+          setHeroEvents(featured.length > 0 ? featured.slice(0, 5) : activeEvents.slice(0, 5));
         }
       } catch (err) {
         console.error("Failed to load initial data", err);

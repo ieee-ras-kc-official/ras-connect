@@ -43,11 +43,16 @@ export function EventSearch({ events, chapters }: { events: any[]; chapters: any
     
     const normalized = deferredQuery.trim().toLocaleLowerCase();
     if (normalized) {
-      result = result.filter((event) =>
-        [event.name, event.location, event.description.join(" ")].some((value) =>
-          value.toLocaleLowerCase().includes(normalized),
-        ),
-      );
+      result = result.filter((event) => {
+        const descStr = Array.isArray(event.description)
+          ? event.description.join(" ")
+          : typeof event.description === "string"
+          ? event.description
+          : "";
+        return [event.name, event.location, descStr].some((value) =>
+          value ? value.toLocaleLowerCase().includes(normalized) : false,
+        );
+      });
     }
     return result;
   }, [events, deferredQuery, selectedChapter]);

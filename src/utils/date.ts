@@ -6,7 +6,8 @@
 export function isEventPassed(dateStr: string): boolean {
   if (!dateStr) return false;
 
-  const parsedDate = Date.parse(dateStr);
+  const cleanedStr = dateStr.replace(/(\d+)(st|nd|rd|th)/gi, "$1");
+  const parsedDate = Date.parse(cleanedStr);
   if (isNaN(parsedDate)) {
     // If date format is non-standard or custom range, do not auto-archive
     return false;

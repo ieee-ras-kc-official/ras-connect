@@ -61,18 +61,8 @@ export function ChapterPageClient({ chapterSlug }: Props) {
     );
   }
 
-  const currentEvents = events.filter((event: any) => {
-    const dateStr = typeof event.date === "string" 
-      ? event.date 
-      : event.date?.label || "";
-    return !event.archived && !isEventPassed(dateStr);
-  });
-  const archivedEvents = events.filter((event: any) => {
-    const dateStr = typeof event.date === "string" 
-      ? event.date 
-      : event.date?.label || "";
-    return event.archived || isEventPassed(dateStr);
-  });
+  const currentEvents = events.filter((event: any) => !event.archived);
+  const archivedEvents = events.filter((event: any) => event.archived);
 
   return (
     <>

@@ -49,12 +49,7 @@ export function EventsPageClient() {
     return <SearchFallback />;
   }
 
-  const activeEvents = events.filter((event: any) => {
-    const dateStr = typeof event.date === "string" 
-      ? event.date 
-      : event.date?.label || "";
-    return !event.archived && !isEventPassed(dateStr);
-  });
+  const activeEvents = events.filter((event: any) => !event.archived);
 
   return <EventSearch events={activeEvents} chapters={chapters} />;
 }

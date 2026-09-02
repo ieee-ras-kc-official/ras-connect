@@ -242,13 +242,13 @@ export function HomeHero({ events, chaptersCount, eventsCount }: HomeHeroProps) 
                       </div>
                       
                       {/* Event Name Text with Sharp Swiss layout */}
-                      <div className="pt-3 flex items-start gap-4">
-                        <span className="font-mono text-[11px] font-medium tracking-wider text-muted/70 mt-1.5">
+                      <div className="pt-3 flex items-center gap-3 min-w-0">
+                        <span className="font-mono text-[11px] font-medium tracking-wider text-muted/70 shrink-0">
                           {(currentIndex + 1).toString().padStart(2, "0")}.
                         </span>
-                        <div className="flex-1">
-                          <Link href={`/events/${activeEvent.slug}`} className="group inline-block">
-                            <h3 className="text-pretty text-xl font-extrabold leading-tight tracking-tight text-ink uppercase group-hover:text-brand transition-colors duration-150 md:text-2xl">
+                        <div className="flex-1 min-w-0">
+                          <Link href={`/events/${activeEvent.slug}`} className="group block min-w-0" title={activeEvent.name}>
+                            <h3 className="text-sm sm:text-base font-bold text-ink uppercase group-hover:text-brand transition-colors duration-150 truncate">
                               {activeEvent.name}
                             </h3>
                           </Link>

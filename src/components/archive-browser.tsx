@@ -18,6 +18,16 @@ type ArchiveBrowserProps = {
   chapters: Chapter[];
 };
 
+function getEventYear(event: any): number {
+  if (typeof event?.date?.year === "number") return event.date.year;
+  const dateStr = typeof event?.date === "string" ? event.date : (event?.date?.label || "");
+  const parsed = Date.parse(dateStr);
+  if (!isNaN(parsed)) return new Date(parsed).getFullYear();
+  const match = dateStr.match(/\b(20\d{2})\b/);
+  if (match) return parseInt(match[1], 10);
+  return new Date().getFullYear();
+}
+
 export function ArchiveBrowser({ events, chapters }: ArchiveBrowserProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -42,7 +52,7 @@ export function ArchiveBrowser({ events, chapters }: ArchiveBrowserProps) {
       Array.from(
         new Set(
           events
-            .map((event) => event.date?.year)
+            .map((event) => getEventYear(event))
             .filter((year): year is number => typeof year === "number"),
         ),
       ).sort((a, b) => b - a),
@@ -54,7 +64,7 @@ export function ArchiveBrowser({ events, chapters }: ArchiveBrowserProps) {
       Array.from(
         new Set(
           chapterFilteredEvents
-            .map((event) => event.date?.year)
+            .map((event) => getEventYear(event))
             .filter((year): year is number => typeof year === "number"),
         ),
       ).sort((a, b) => b - a),
@@ -92,7 +102,7 @@ export function ArchiveBrowser({ events, chapters }: ArchiveBrowserProps) {
   const filtered = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase();
     return chapterFilteredEvents
-      .filter((event) => year === "all" || String(event.date?.year) === year)
+      .filter((event) => year === "all" || String(getEventYear(event)) === year)
       .filter((event) => {
         if (!normalized) return true;
         const chapter = chapters.find(
@@ -109,7 +119,7 @@ export function ArchiveBrowser({ events, chapters }: ArchiveBrowserProps) {
   const grouped = useMemo(() => {
     const result = new Map<number, Map<string, RasEvent[]>>();
     visible.forEach((event) => {
-      const eventYear = event.date?.year ?? 0;
+      const eventYear = getEventYear(event);
       if (!result.has(eventYear)) result.set(eventYear, new Map());
       const byChapter = result.get(eventYear)!;
       const existing = byChapter.get(event.chapterSlug) ?? [];

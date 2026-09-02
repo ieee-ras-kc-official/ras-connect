@@ -8,6 +8,7 @@ import { EventCard } from "@/components/event-card";
 import { ImageWithFallback } from "@/components/image-with-fallback";
 import { Reveal } from "@/components/reveal";
 import { API_BASE_URL } from "@/config/api";
+import { isEventPassed } from "@/utils/date";
 
 type Props = {
   eventSlug: string;
@@ -29,20 +30,22 @@ export function EventPageClient({ eventSlug }: Props) {
         setEvent(eventData);
 
         // Fetch related Chapter & Events
-        const [chapterRes, relatedRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/chapters/${eventData.chapterSlug}`),
-          fetch(`${API_BASE_URL}/api/events?chapter=${eventData.chapterSlug}`)
-        ]);
+        if (eventData.chapterSlug) {
+          const [chapterRes, relatedRes] = await Promise.all([
+            fetch(`${API_BASE_URL}/api/chapters/${eventData.chapterSlug}`),
+            fetch(`${API_BASE_URL}/api/events?chapter=${eventData.chapterSlug}`)
+          ]);
 
-        if (chapterRes.ok) {
-          setChapter(await chapterRes.json());
-        }
+          if (chapterRes.ok) {
+            setChapter(await chapterRes.json());
+          }
 
-        if (relatedRes.ok) {
-          const relatedData = await relatedRes.json();
-          setRelatedEvents(
-            relatedData.filter((e: any) => e.slug !== eventData.slug).slice(0, 5)
-          );
+          if (relatedRes.ok) {
+            const relatedData = await relatedRes.json();
+            setRelatedEvents(
+              relatedData.filter((e: any) => e.slug !== eventData.slug).slice(0, 5)
+            );
+          }
         }
       } catch (err) {
         console.error("Failed to load event details dynamically:", err);
@@ -63,7 +66,7 @@ export function EventPageClient({ eventSlug }: Props) {
     );
   }
 
-  if (!event || !chapter) {
+  if (!event) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center">
         <h2 className="text-xl font-bold uppercase text-ink">Event not found</h2>
@@ -74,7 +77,27 @@ export function EventPageClient({ eventSlug }: Props) {
     );
   }
 
+  const activeChapter = chapter || {
+    name: event.chapterSlug ? event.chapterSlug.toUpperCase() : "IEEE RAS Chapter",
+    slug: event.chapterSlug || "",
+  };
+
   const gallery = event.gallery || [];
+  const descList = Array.isArray(event.description)
+    ? event.description
+    : typeof event.description === "string"
+    ? [event.description]
+    : [];
+
+  const imageSrc = event.image
+    ? event.image.startsWith("/uploads/")
+      ? `${API_BASE_URL}${event.image}`
+      : event.image
+    : "/card1.jpeg";
+
+  const displayDate = typeof event.date === "string"
+    ? event.date
+    : event.date?.label || "";
 
   return (
     <>
@@ -84,7 +107,7 @@ export function EventPageClient({ eventSlug }: Props) {
             items={[
               { label: "Home", href: "/" },
               { label: "Chapters", href: "/chapters" },
-              { label: chapter.name, href: `/chapters/${chapter.slug}` },
+              { label: activeChapter.name, href: activeChapter.slug ? `/chapters/${activeChapter.slug}` : "/chapters" },
               { label: event.name },
             ]}
           />
@@ -93,7 +116,7 @@ export function EventPageClient({ eventSlug }: Props) {
             <Reveal className="lg:col-span-4 flex justify-center lg:justify-start">
               <div className="relative aspect-square w-full max-w-[340px] overflow-hidden border border-line bg-surface-soft rounded-none flex items-center justify-center">
                 <ImageWithFallback
-                  src={event.image || "/card1.jpeg"}
+                  src={imageSrc}
                   alt={event.imageAlt || event.name}
                   sizes="(max-width: 1023px) 100vw, 30vw"
                   priority
@@ -109,15 +132,15 @@ export function EventPageClient({ eventSlug }: Props) {
               <p className="mt-3 text-sm leading-6 text-muted">
                 Organized by{" "}
                 <Link
-                  href={`/chapters/${chapter.slug}`}
+                  href={activeChapter.slug ? `/chapters/${activeChapter.slug}` : "/chapters"}
                   className="font-bold text-brand transition-colors hover:text-accent"
                 >
-                  {chapter.name}
+                  {activeChapter.name}
                 </Link>
               </p>
 
               <dl className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {event.date ? (
+                {displayDate ? (
                   <div className="flex items-center gap-3 border border-line bg-surface p-3 rounded-none">
                     <span className="grid size-9 place-items-center border border-line bg-surface-soft text-brand rounded-none shrink-0">
                       <CalendarBlankIcon size={18} aria-hidden="true" />
@@ -127,52 +150,71 @@ export function EventPageClient({ eventSlug }: Props) {
                         Date
                       </dt>
                       <dd className="mt-0.5 text-xs font-bold text-ink truncate">
-                        {typeof event.date === "string" ? event.date : event.date.label}
+                        {displayDate}
                       </dd>
                     </div>
                   </div>
                 ) : null}
-                <div className="flex items-center gap-3 border border-line bg-surface p-3 rounded-none">
-                  <span className="grid size-9 place-items-center border border-line bg-surface-soft text-brand rounded-none shrink-0">
-                    <MapPinIcon size={18} aria-hidden="true" />
-                  </span>
-                  <div className="min-w-0">
-                    <dt className="font-mono text-[9px] font-bold uppercase tracking-[0.08em] text-muted">
-                      Location
-                    </dt>
-                    <dd className="mt-0.5 text-xs font-bold text-ink truncate">
-                      {event.location}
-                    </dd>
+                {event.location ? (
+                  <div className="flex items-center gap-3 border border-line bg-surface p-3 rounded-none">
+                    <span className="grid size-9 place-items-center border border-line bg-surface-soft text-brand rounded-none shrink-0">
+                      <MapPinIcon size={18} aria-hidden="true" />
+                    </span>
+                    <div className="min-w-0">
+                      <dt className="font-mono text-[9px] font-bold uppercase tracking-[0.08em] text-muted">
+                        Location
+                      </dt>
+                      <dd className="mt-0.5 text-xs font-bold text-ink truncate">
+                        {event.location}
+                      </dd>
+                    </div>
                   </div>
-                </div>
+                ) : null}
               </dl>
 
-              {event.registrationLink ? (() => {
-                const targetUrl = event.registrationLink.startsWith("http://") || event.registrationLink.startsWith("https://")
-                  ? event.registrationLink
-                  : `https://${event.registrationLink}`;
-                return (
-                  <div className="mt-6">
-                    <a
-                      href={targetUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex h-12 items-center justify-center border border-ink bg-ink px-8 text-xs font-mono font-bold uppercase tracking-wider text-white transition-colors duration-150 hover:bg-brand hover:border-brand rounded-none cursor-pointer"
-                    >
-                      Register Now
-                    </a>
-                  </div>
-                );
-              })() : null}
+              {(() => {
+                const isArchived = Boolean(event.archived || isEventPassed(displayDate));
+                if (isArchived) {
+                  return (
+                    <div className="mt-6">
+                      <span className="inline-flex h-10 items-center justify-center border border-line bg-surface-soft px-5 text-xs font-mono font-bold uppercase tracking-wider text-muted select-none">
+                        Event Concluded
+                      </span>
+                    </div>
+                  );
+                }
+                if (event.registrationLink) {
+                  const targetUrl = event.registrationLink.startsWith("http://") || event.registrationLink.startsWith("https://")
+                    ? event.registrationLink
+                    : `https://${event.registrationLink}`;
+                  return (
+                    <div className="mt-6">
+                      <a
+                        href={targetUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex h-12 items-center justify-center border border-ink bg-ink px-8 text-xs font-mono font-bold uppercase tracking-wider text-white transition-colors duration-150 hover:bg-brand hover:border-brand rounded-none cursor-pointer"
+                      >
+                        Register Now
+                      </a>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
 
               <section className="mt-8 border-t border-line pt-6" aria-labelledby="about-event-heading">
                 <h2 id="about-event-heading" className="text-xl font-bold uppercase tracking-tight text-ink">
                   About the event
                 </h2>
                 <div className="mt-4 space-y-4 text-sm leading-6 text-muted">
-                  {event.description && event.description.map((paragraph: string) => (
-                    <p key={paragraph}>{paragraph}</p>
-                  ))}
+                  {descList.length > 0 ? (
+                    descList.map((paragraph: string, idx: number) => (
+                      <p key={idx}>{paragraph}</p>
+                    ))
+                  ) : (
+                    <p>No description provided for this event.</p>
+                  )}
                 </div>
               </section>
             </Reveal>
@@ -188,7 +230,7 @@ export function EventPageClient({ eventSlug }: Props) {
               <div className="mt-8 grid gap-4 md:grid-cols-12 md:grid-rows-2">
                 {gallery.map((image: any, index: number) => (
                   <Reveal
-                    key={image.src}
+                    key={image.src || index}
                     delay={index * 0.05}
                     className={
                       index === 0
@@ -197,8 +239,8 @@ export function EventPageClient({ eventSlug }: Props) {
                     }
                   >
                     <ImageWithFallback
-                      src={image.src}
-                      alt={image.alt}
+                      src={image.src?.startsWith("/uploads/") ? `${API_BASE_URL}${image.src}` : image.src}
+                      alt={image.alt || event.name}
                       sizes={index === 0 ? "(max-width: 767px) 100vw, 58vw" : "(max-width: 767px) 100vw, 42vw"}
                       className="object-cover"
                     />
@@ -218,10 +260,10 @@ export function EventPageClient({ eventSlug }: Props) {
                 id="related-events-heading"
                 className="text-xl font-bold uppercase tracking-tight text-ink"
               >
-                More from {chapter.name}
+                More from {activeChapter.name}
               </h2>
               <Link
-                href={`/chapters/${chapter.slug}`}
+                href={activeChapter.slug ? `/chapters/${activeChapter.slug}` : "/chapters"}
                 className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-brand transition-colors hover:text-accent rounded-none"
               >
                 <ArrowLeftIcon size={14} aria-hidden="true" />
@@ -231,7 +273,7 @@ export function EventPageClient({ eventSlug }: Props) {
             <div className="mt-6 no-scrollbar -mx-4 flex snap-x snap-mandatory overflow-x-auto px-4 pb-4 pt-1 gap-6">
               {relatedEvents.map((related: any, index: number) => (
                 <div
-                  key={related.slug}
+                  key={related.slug || index}
                   className="shrink-0 w-[280px] sm:w-[300px] snap-start"
                 >
                   <EventCard event={related} index={index} />
@@ -244,3 +286,4 @@ export function EventPageClient({ eventSlug }: Props) {
     </>
   );
 }
+

@@ -1,14 +1,13 @@
 "use client";
 
-import { ImageBrokenIcon } from "@phosphor-icons/react";
-import Image from "next/image";
 import { useState } from "react";
+import { API_BASE_URL } from "@/config/api";
 
 type ImageWithFallbackProps = {
   src: string | null;
   alt: string;
   className?: string;
-  sizes: string;
+  sizes?: string;
   priority?: boolean;
 };
 
@@ -16,23 +15,26 @@ export function ImageWithFallback({
   src,
   alt,
   className = "object-cover",
-  sizes,
   priority = false,
 }: ImageWithFallbackProps) {
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
-  const failed = Boolean(src && failedSrc === src);
 
-  const finalSrc = !src || failed ? "/card1.jpeg" : src;
+  const rawSrc = src && src.trim() !== "" ? src : null;
+  let resolvedSrc = rawSrc;
+
+  if (rawSrc && rawSrc.startsWith("/uploads/")) {
+    resolvedSrc = `${API_BASE_URL}${rawSrc}`;
+  }
+
+  const failed = Boolean(resolvedSrc && failedSrc === resolvedSrc);
+  const finalSrc = !resolvedSrc || failed ? "/card1.jpeg" : resolvedSrc;
 
   return (
-    <Image
+    <img
       src={finalSrc}
       alt={alt}
-      fill
-      sizes={sizes}
-      priority={priority}
-      className={className}
-      onError={() => setFailedSrc(src)}
+      className={`w-full h-full ${className}`}
+      onError={() => setFailedSrc(resolvedSrc)}
     />
   );
 }
