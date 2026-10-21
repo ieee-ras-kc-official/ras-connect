@@ -82,7 +82,13 @@ export function ChapterPageClient({ chapterSlug }: Props) {
               <div className="flex flex-col sm:flex-row sm:items-center gap-5 mb-6">
                 <div className="size-20 sm:size-24 bg-surface-soft border border-line shrink-0 p-2 overflow-hidden relative">
                   <ImageWithFallback
-                    src={chapter.logo || chapter.image || "/images/brand/default-chapter-icon.svg"}
+                    src={
+                      chapter.logo && chapter.logo !== "/card1.jpeg"
+                        ? chapter.logo
+                        : chapter.image && chapter.image !== "/card1.jpeg"
+                        ? chapter.image
+                        : "/images/brand/default-chapter-icon.svg"
+                    }
                     alt={chapter.name}
                     fallbackSrc="/images/brand/default-chapter-icon.svg"
                     className="object-contain w-full h-full"

@@ -120,7 +120,7 @@ export function EventPageClient({ eventSlug }: Props) {
                   alt={event.imageAlt || event.name}
                   sizes="(max-width: 1023px) 100vw, 30vw"
                   priority
-                  className="object-contain w-full h-full p-2"
+                  className="object-cover w-full h-full"
                 />
               </div>
             </Reveal>

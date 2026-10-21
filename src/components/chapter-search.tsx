@@ -118,7 +118,13 @@ export function ChapterSearch({ chapters }: { chapters: Chapter[] }) {
                 >
                   <span className="relative block aspect-square w-[72px] overflow-hidden bg-surface-soft border border-line rounded-none">
                     <ImageWithFallback
-                      src={(chapter as any).logo || chapter.image || "/images/brand/default-chapter-icon.svg"}
+                      src={
+                        (chapter as any).logo && (chapter as any).logo !== "/card1.jpeg"
+                          ? (chapter as any).logo
+                          : chapter.image && chapter.image !== "/card1.jpeg"
+                          ? chapter.image
+                          : "/images/brand/default-chapter-icon.svg"
+                      }
                       alt={chapter.name}
                       fallbackSrc="/images/brand/default-chapter-icon.svg"
                       sizes="72px"
