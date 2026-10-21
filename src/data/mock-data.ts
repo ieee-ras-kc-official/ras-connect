@@ -5,6 +5,7 @@ export type Chapter = {
   location: string;
   description: string;
   image: string | null;
+  logo?: string;
   imageAlt: string;
   featured?: boolean;
 };
@@ -32,71 +33,461 @@ export type RasEvent = {
 // UI-only mock content. Replace these records when approved production data is available.
 export const chapters: Chapter[] = [
   {
-    slug: "model-engineering-college",
-    name: "Robotics Society MEC",
-    college: "Government Model Engineering College",
-    location: "Kochi, Kerala",
-    description:
-      "A student community exploring robotics through practical builds, peer-led workshops, and collaborative demonstrations.",
-    image: "/card1.jpeg",
-    imageAlt: "Students presenting robotics projects in a college courtyard",
-    featured: true,
+    "slug": "model-engineering-college",
+    "name": "Robotics Society MEC",
+    "college": "Government Model Engineering College",
+    "location": "Kochi, Kerala",
+    "description": "A student community exploring robotics through practical builds, peer-led workshops, and collaborative demonstrations.",
+    "image": "/card1.jpeg",
+    "imageAlt": "Students presenting robotics projects in a college courtyard",
+    "featured": true
   },
   {
-    slug: "tkm-college-of-engineering",
-    name: "RAS SBC TKMCE",
-    college: "TKM College of Engineering",
-    location: "Kollam, Kerala",
-    description:
-      "A hands-on chapter bringing students together around autonomous systems, electronics, and industrial automation.",
-    image: "/card1.jpeg",
-    imageAlt: "Students assembling robots together in a bright engineering lab",
-    featured: true,
+    "slug": "tkm-college-of-engineering",
+    "name": "RAS SBC TKMCE",
+    "college": "TKM College of Engineering",
+    "location": "Kollam, Kerala",
+    "description": "A hands-on chapter bringing students together around autonomous systems, electronics, and industrial automation.",
+    "image": "/card1.jpeg",
+    "imageAlt": "Students assembling robots together in a bright engineering lab",
+    "featured": true
   },
   {
-    slug: "cusat",
-    name: "IEEE RAS CUSAT",
-    college: "Cochin University of Science and Technology",
-    location: "Kochi, Kerala",
-    description:
-      "A campus group connecting robotics theory with focused workshops, technical discussions, and project showcases.",
-    image: "/card1.jpeg",
-    imageAlt: "Students attending a technical presentation in a large auditorium",
-    featured: true,
+    "slug": "cusat",
+    "name": "IEEE RAS CUSAT",
+    "college": "Cochin University of Science and Technology",
+    "location": "Kochi, Kerala",
+    "description": "A campus group connecting robotics theory with focused workshops, technical discussions, and project showcases.",
+    "image": "/card1.jpeg",
+    "imageAlt": "Students attending a technical presentation in a large auditorium",
+    "featured": true
   },
   {
-    slug: "gec-barton-hill",
-    name: "RAS GECB",
-    college: "Government Engineering College Barton Hill",
-    location: "Thiruvananthapuram, Kerala",
-    description:
-      "A collaborative robotics community focused on building, testing, and sharing applied automation projects.",
-    image: "/card1.jpeg",
-    imageAlt: "Students working with a robotic arm in an engineering laboratory",
-    featured: true,
+    "slug": "gec-barton-hill",
+    "name": "RAS GECB",
+    "college": "Government Engineering College Barton Hill",
+    "location": "Thiruvananthapuram, Kerala",
+    "description": "A collaborative robotics community focused on building, testing, and sharing applied automation projects.",
+    "image": "/card1.jpeg",
+    "imageAlt": "Students working with a robotic arm in an engineering laboratory",
+    "featured": true
   },
   {
-    slug: "college-of-engineering-trivandrum",
-    name: "IEEE RAS CET",
-    college: "College of Engineering Trivandrum",
-    location: "Thiruvananthapuram, Kerala",
-    description:
-      "A chapter where students learn through robotics workshops, autonomous-system projects, and conversations with practitioners.",
-    image: "/card1.jpeg",
-    imageAlt: "Students collaborating around a robot prototype",
-    featured: true,
+    "slug": "college-of-engineering-trivandrum",
+    "name": "IEEE RAS CET",
+    "college": "College of Engineering Trivandrum",
+    "location": "Thiruvananthapuram, Kerala",
+    "description": "A chapter where students learn through robotics workshops, autonomous-system projects, and conversations with practitioners.",
+    "image": "/card1.jpeg",
+    "imageAlt": "Students collaborating around a robot prototype",
+    "featured": true
   },
   {
-    slug: "nss-college-of-engineering",
-    name: "IEEE RAS NSSCE",
-    college: "NSS College of Engineering",
-    location: "Palakkad, Kerala",
-    description:
-      "A growing student chapter preparing its first set of robotics and automation activities for the showcase.",
-    image: "/card1.jpeg",
-    imageAlt: "Students discussing robotics code and building prototypes",
-    featured: true,
+    "slug": "nss-college-of-engineering",
+    "name": "IEEE RAS NSSCE",
+    "college": "NSS College of Engineering",
+    "location": "Palakkad, Kerala",
+    "description": "A growing student chapter preparing its first set of robotics and automation activities for the showcase.",
+    "image": "/card1.jpeg",
+    "imageAlt": "Students discussing robotics code and building prototypes",
+    "featured": true
   },
+  {
+    "slug": "ieee-fisat-sb",
+    "name": "IEEE FISAT SB",
+    "college": "Federal Institute of Science and Technology",
+    "location": "Angamaly, Ernakulam",
+    "description": "IEEE FISAT SB representing Federal Institute of Science and Technology, Angamaly, Ernakulam. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE FISAT SB Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-mits",
+    "name": "IEEE RAS SBC MITS",
+    "college": "Muthoot Institute of Technology and Science",
+    "location": "Varikoli, Ernakulam",
+    "description": "IEEE RAS SBC MITS representing Muthoot Institute of Technology and Science, Varikoli, Ernakulam. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC MITS Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-kmea",
+    "name": "IEEE RAS SBC KMEA",
+    "college": "KMEA Engineering College",
+    "location": "Edathala, Aluva",
+    "description": "IEEE RAS SBC KMEA representing KMEA Engineering College, Edathala, Aluva. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC KMEA Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-mec",
+    "name": "IEEE RAS SBC MEC",
+    "college": "Govt. Model Engineering College",
+    "location": "Thrikkakara, Kochi",
+    "description": "IEEE RAS SBC MEC representing Govt. Model Engineering College, Thrikkakara, Kochi. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC MEC Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-cusat",
+    "name": "IEEE RAS SBC CUSAT",
+    "college": "Cochin University of Science and Technology",
+    "location": "Kalamassery, Kochi",
+    "description": "IEEE RAS SBC CUSAT representing Cochin University of Science and Technology, Kalamassery, Kochi. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC CUSAT Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-cec",
+    "name": "IEEE RAS SBC CEC",
+    "college": "College of Engineering Chengannur",
+    "location": "Chengannur, Alappuzha",
+    "description": "IEEE RAS SBC CEC representing College of Engineering Chengannur, Chengannur, Alappuzha. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC CEC Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-rit",
+    "name": "IEEE RAS SBC RIT",
+    "college": "Rajiv Gandhi Institute of Technology",
+    "location": "Pampady, Kottayam",
+    "description": "IEEE RAS SBC RIT representing Rajiv Gandhi Institute of Technology, Pampady, Kottayam. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC RIT Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-prc",
+    "name": "IEEE RAS SBC PRC",
+    "college": "Providence College of Engineering",
+    "location": "Chengannur, Alappuzha",
+    "description": "IEEE RAS SBC PRC representing Providence College of Engineering, Chengannur, Alappuzha. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC PRC Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-geci",
+    "name": "IEEE RAS SBC GECI",
+    "college": "Govt. Engineering College Idukki",
+    "location": "Painavu, Idukki",
+    "description": "IEEE RAS SBC GECI representing Govt. Engineering College Idukki, Painavu, Idukki. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC GECI Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-sjcet",
+    "name": "IEEE RAS SBC SJCET",
+    "college": "St. Joseph's College of Engineering and Technology",
+    "location": "Palai, Kottayam",
+    "description": "IEEE RAS SBC SJCET representing St. Joseph's College of Engineering and Technology, Palai, Kottayam. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC SJCET Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ras-mace",
+    "name": "IEEE RAS MACE SBC",
+    "college": "Mar Athanasius College of Engineering",
+    "location": "Kothamangalam, Ernakulam",
+    "description": "IEEE RAS MACE SBC representing Mar Athanasius College of Engineering, Kothamangalam, Ernakulam. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS MACE SBC Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-sb-cce",
+    "name": "IEEE SB CCE",
+    "college": "Christ College of Engineering",
+    "location": "Irinjalakuda, Thrissur",
+    "description": "IEEE SB CCE representing Christ College of Engineering, Irinjalakuda, Thrissur. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE SB CCE Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-asiet",
+    "name": "IEEE RAS SBC ASIET",
+    "college": "Adi Shankara Institute of Engineering and Technology",
+    "location": "Kalady, Ernakulam",
+    "description": "IEEE RAS SBC ASIET representing Adi Shankara Institute of Engineering and Technology, Kalady, Ernakulam. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC ASIET Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-cek-kidangoor",
+    "name": "IEEE RAS SBC CEK (Kidangoor)",
+    "college": "College of Engineering Kidangoor",
+    "location": "Kidangoor, Kottayam",
+    "description": "IEEE RAS SBC CEK (Kidangoor) representing College of Engineering Kidangoor, Kidangoor, Kottayam. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC CEK (Kidangoor) Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sb-gect",
+    "name": "IEEE RAS SB GECT",
+    "college": "Govt. Engineering College Thrissur",
+    "location": "Thrissur",
+    "description": "IEEE RAS SB GECT representing Govt. Engineering College Thrissur, Thrissur. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SB GECT Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-sahrdaya-ras-sbc",
+    "name": "IEEE SAHRDAYA RAS SBC",
+    "college": "Sahrdaya College of Engineering and Technology",
+    "location": "Kodakara, Thrissur",
+    "description": "IEEE SAHRDAYA RAS SBC representing Sahrdaya College of Engineering and Technology, Kodakara, Thrissur. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE SAHRDAYA RAS SBC Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-saintgits",
+    "name": "IEEE RAS SBC Saintgits",
+    "college": "Saintgits College of Engineering",
+    "location": "Pathamuttom, Kottayam",
+    "description": "IEEE RAS SBC Saintgits representing Saintgits College of Engineering, Pathamuttom, Kottayam. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC Saintgits Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-cek-kallooppara",
+    "name": "IEEE RAS SBC CEK (Kallooppara)",
+    "college": "College of Engineering Kallooppara",
+    "location": "Kallooppara, Pathanamthitta",
+    "description": "IEEE RAS SBC CEK (Kallooppara) representing College of Engineering Kallooppara, Kallooppara, Pathanamthitta. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC CEK (Kallooppara) Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-nitc",
+    "name": "IEEE RAS SBC NITC",
+    "college": "National Institute of Technology Calicut",
+    "location": "Chathamangalam, Kozhikode",
+    "description": "IEEE RAS SBC NITC representing National Institute of Technology Calicut, Chathamangalam, Kozhikode. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC NITC Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-nssce",
+    "name": "IEEE RAS SBC NSSCE",
+    "college": "NSS College of Engineering",
+    "location": "Akathethara, Palakkad",
+    "description": "IEEE RAS SBC NSSCE representing NSS College of Engineering, Akathethara, Palakkad. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC NSSCE Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-geck",
+    "name": "IEEE RAS SBC GECK",
+    "college": "Govt. Engineering College Kozhikode",
+    "location": "Westhill, Kozhikode",
+    "description": "IEEE RAS SBC GECK representing Govt. Engineering College Kozhikode, Westhill, Kozhikode. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC GECK Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-vjec",
+    "name": "IEEE RAS SBC VJEC",
+    "college": "Vimal Jyothi Engineering College",
+    "location": "Chemperi, Kannur",
+    "description": "IEEE RAS SBC VJEC representing Vimal Jyothi Engineering College, Chemperi, Kannur. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC VJEC Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-sb-gcek",
+    "name": "IEEE SB GCEK",
+    "college": "Govt. College of Engineering Kannur",
+    "location": "Mangattuparamba, Kannur",
+    "description": "IEEE SB GCEK representing Govt. College of Engineering Kannur, Mangattuparamba, Kannur. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE SB GCEK Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-cea",
+    "name": "IEEE RAS SBC CEA",
+    "college": "College of Engineering Adoor",
+    "location": "Manakkala, Adoor, Pathanamthitta",
+    "description": "IEEE RAS SBC CEA representing College of Engineering Adoor, Manakkala, Adoor, Pathanamthitta. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC CEA Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-cek-karunagappally",
+    "name": "IEEE RAS SBC CEK (Karunagappally)",
+    "college": "College of Engineering Karunagappally",
+    "location": "Thodiyoor, Karunagappally, Kollam",
+    "description": "IEEE RAS SBC CEK (Karunagappally) representing College of Engineering Karunagappally, Thodiyoor, Karunagappally, Kollam. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC CEK (Karunagappally) Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-sb-gecbh",
+    "name": "IEEE SB GECBH",
+    "college": "Govt. Engineering College Barton Hill",
+    "location": "Vanchiyoor, Thiruvananthapuram",
+    "description": "IEEE SB GECBH representing Govt. Engineering College Barton Hill, Vanchiyoor, Thiruvananthapuram. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE SB GECBH Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ras-sbc-ce-perumon",
+    "name": "RAS SBC CE-Perumon",
+    "college": "College of Engineering Perumon",
+    "location": "Perinad, Kollam",
+    "description": "RAS SBC CE-Perumon representing College of Engineering Perumon, Perinad, Kollam. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "RAS SBC CE-Perumon Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-jcmcsiit",
+    "name": "IEEE RAS SBC JCMCSIIT",
+    "college": "John Cox Memorial CSI Institute of Technology",
+    "location": "Kannammoola, Thiruvananthapuram",
+    "description": "IEEE RAS SBC JCMCSIIT representing John Cox Memorial CSI Institute of Technology, Kannammoola, Thiruvananthapuram. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC JCMCSIIT Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-lbsitw",
+    "name": "IEEE RAS SBC LBSITW",
+    "college": "LBS Institute of Technology for Women",
+    "location": "Poojappura, Thiruvananthapuram",
+    "description": "IEEE RAS SBC LBSITW representing LBS Institute of Technology for Women, Poojappura, Thiruvananthapuram. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC LBSITW Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-sct",
+    "name": "IEEE RAS SBC SCT",
+    "college": "SCT College of Engineering",
+    "location": "Pappanamcode, Thiruvananthapuram",
+    "description": "IEEE RAS SBC SCT representing SCT College of Engineering, Pappanamcode, Thiruvananthapuram. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC SCT Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-mbcet",
+    "name": "IEEE RAS SBC MBCET",
+    "college": "Mar Baselios College of Engineering and Technology",
+    "location": "Nalanchira, Thiruvananthapuram",
+    "description": "IEEE RAS SBC MBCET representing Mar Baselios College of Engineering and Technology, Nalanchira, Thiruvananthapuram. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC MBCET Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-cet",
+    "name": "IEEE RAS SBC CET",
+    "college": "College of Engineering Trivandrum",
+    "location": "Kulathoor, Thiruvananthapuram",
+    "description": "IEEE RAS SBC CET representing College of Engineering Trivandrum, Kulathoor, Thiruvananthapuram. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC CET Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-ceal",
+    "name": "IEEE RAS SBC CEAL",
+    "college": "College of Engineering Attingal",
+    "location": "Attingal, Thiruvananthapuram",
+    "description": "IEEE RAS SBC CEAL representing College of Engineering Attingal, Attingal, Thiruvananthapuram. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC CEAL Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-tkmce",
+    "name": "IEEE RAS SBC TKMCE",
+    "college": "TKM College of Engineering",
+    "location": "Karicode, Kollam",
+    "description": "IEEE RAS SBC TKMCE representing TKM College of Engineering, Karicode, Kollam. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC TKMCE Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sb-cectl",
+    "name": "IEEE RAS SB CECTL",
+    "college": "College of Engineering Thalassery",
+    "location": "Eranholi, Thalassery, Kannur",
+    "description": "IEEE RAS SB CECTL representing College of Engineering Thalassery, Eranholi, Thalassery, Kannur. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SB CECTL Official Logo",
+    "featured": true
+  },
+  {
+    "slug": "ieee-ras-sbc-ucek",
+    "name": "IEEE RAS SBC UCEK",
+    "college": "University College of Engineering Kariavattom",
+    "location": "Kariavattom, Thiruvananthapuram",
+    "description": "IEEE RAS SBC UCEK representing University College of Engineering Kariavattom, Kariavattom, Thiruvananthapuram. Official student branch chapter under IEEE RAS Kerala Chapter.",
+    "image": "/images/brand/default-chapter-icon.svg",
+    "logo": "/images/brand/default-chapter-icon.svg",
+    "imageAlt": "IEEE RAS SBC UCEK Official Logo",
+    "featured": true
+  }
 ];
 
 export const events: RasEvent[] = [

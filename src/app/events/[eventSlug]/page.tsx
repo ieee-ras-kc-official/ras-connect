@@ -35,11 +35,49 @@ export async function generateMetadata({
   params,
 }: EventPageProps): Promise<Metadata> {
   const { eventSlug } = await params;
-  const event = await fetchEvent(eventSlug);
-  if (!event) return {};
+  let event = await fetchEvent(eventSlug);
+  if (!event) {
+    event = fallbackEvents.find((e) => e.slug === eventSlug);
+  }
+  if (!event) return { title: "Event Not Found | RAS Connect IEEE" };
+
+  const desc = Array.isArray(event.description)
+    ? event.description.join(" ")
+    : typeof event.description === "string"
+    ? event.description
+    : "Robotics and automation event documented on RAS Connect IEEE.";
+  const title = `${event.name} | RAS Connect IEEE`;
+  const url = `https://connect.ras.ieeekerala.org/events/${eventSlug}`;
+  const posterUrl = event.image
+    ? event.image.startsWith("http")
+      ? event.image
+      : `https://connect.ras.ieeekerala.org${event.image}`
+    : "https://connect.ras.ieeekerala.org/card1.jpeg";
+
   return {
-    title: event.name,
-    description: event.description && event.description[0] ? event.description[0] : "",
+    title,
+    description: desc.slice(0, 160),
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title,
+      description: desc.slice(0, 160),
+      url,
+      siteName: "RAS Connect IEEE",
+      images: [
+        {
+          url: posterUrl,
+          alt: `${event.name} Poster`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: desc.slice(0, 160),
+      images: [posterUrl],
+    },
   };
 }
 

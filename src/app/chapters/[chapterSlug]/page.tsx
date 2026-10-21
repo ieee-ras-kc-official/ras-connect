@@ -35,11 +35,39 @@ export async function generateMetadata({
   params,
 }: ChapterPageProps): Promise<Metadata> {
   const { chapterSlug } = await params;
-  const chapter = await fetchChapter(chapterSlug);
-  if (!chapter) return {};
+  let chapter = await fetchChapter(chapterSlug);
+  if (!chapter) {
+    chapter = fallbackChapters.find((c) => c.slug === chapterSlug);
+  }
+  if (!chapter) return { title: "Chapter Not Found | RAS Connect IEEE" };
+
+  const title = `${chapter.name} | RAS Connect IEEE`;
+  const description = `${chapter.name} representing ${chapter.college}, ${chapter.location || "Kerala"}. Discover robotics events, technical workshops, and chapter milestones on RAS Connect IEEE.`;
+  const url = `https://connect.ras.ieeekerala.org/chapters/${chapterSlug}`;
+
   return {
-    title: chapter.name,
-    description: `${chapter.college} events featured on RAS Connect.`,
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: "RAS Connect IEEE",
+      images: [
+        {
+          url:
+            chapter.logo && chapter.logo !== "/card1.jpeg"
+              ? chapter.logo.startsWith("http")
+                ? chapter.logo
+                : `https://connect.ras.ieeekerala.org${chapter.logo}`
+              : "https://connect.ras.ieeekerala.org/images/brand/ieee-ras-logo.png",
+          alt: `${chapter.name} Logo`,
+        },
+      ],
+    },
   };
 }
 

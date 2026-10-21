@@ -3,13 +3,13 @@ import type { MetadataRoute } from "next";
 export const dynamic = "force-static";
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://ras-connect.ras.ieeekerala.org";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://connect.ras.ieeekerala.org";
   
   return {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/admin/", "/login"],
+      disallow: ["/admin/", "/login/"],
     },
     sitemap: `${baseUrl}/sitemap.xml`,
   };
