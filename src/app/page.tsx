@@ -60,15 +60,15 @@ export default function HomePage() {
           const chaptersData = await chaptersRes.json();
           const eventsData = await eventsRes.json();
 
-          const activeEvents = eventsData.filter((event: any) => !event.archived);
+          const activeEvents = eventsData.filter((event: { archived?: boolean }) => !event.archived);
 
           setChapters(chaptersData);
           setLatestEvents(activeEvents.slice(0, 8));
-          const featured = activeEvents.filter((e: any) => e.isFeatured || e.featured);
+          const featured = activeEvents.filter((e: { isFeatured?: boolean; featured?: boolean }) => e.isFeatured || e.featured);
           setHeroEvents(featured.length > 0 ? featured.slice(0, 5) : activeEvents.slice(0, 5));
         }
-      } catch (err) {
-        console.error("Failed to load initial data", err);
+      } catch {
+        console.error("Failed to load initial data");
       } finally {
         // Small timeout for smooth preloader exit transition
         setTimeout(() => setLoading(false), 800);
@@ -119,7 +119,7 @@ export default function HomePage() {
                   Initiated in connection with <span className="text-brand font-bold">IEEE RAS Day</span>, RAS Connect is a statewide digital ecosystem designed to bridge, showcase, and synergize the initiatives of IEEE Robotics & Automation Society (RAS) Student Branch Chapters across Kerala.
                 </p>
                 <p className="mt-4 text-pretty text-base leading-relaxed text-muted">
-                  The platform serves as an interactive catalog and showcase, documenting local events, technical milestones, and collaborative projects. By consolidating student branch updates into a single public directory, RAS Connect fosters peer-to-peer learning, enhances state-wide community outreach, and highlights Kerala's growing ecosystem of robotics education.
+                  The platform serves as an interactive catalog and showcase, documenting local events, technical milestones, and collaborative projects. By consolidating student branch updates into a single public directory, RAS Connect fosters peer-to-peer learning, enhances state-wide community outreach, and highlights Kerala&apos;s growing ecosystem of robotics education.
                 </p>
               </Reveal>
             </div>

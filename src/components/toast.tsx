@@ -72,7 +72,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               {/* Message */}
               <div className="flex-1 min-w-0">
                 <p className="font-mono text-[9px] font-bold uppercase tracking-widest text-muted mb-0.5">
-                  // {t.type}
+                  SYSTEM // {t.type}
                 </p>
                 <p className="text-xs text-ink font-mono font-medium leading-relaxed break-words">
                   {t.message}

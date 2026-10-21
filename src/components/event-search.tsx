@@ -21,19 +21,6 @@ export function EventSearch({ events, chapters }: { events: any[]; chapters: any
   const selectedChapter = searchParams.get("chapter") ?? "";
   const deferredQuery = useDeferredValue(query);
 
-  if (events.length === 0) {
-    return (
-      <div className="mt-12 border border-line p-8 bg-surface-soft text-center flex flex-col items-center justify-center min-h-[240px]">
-        <h3 className="font-mono text-sm font-bold uppercase tracking-widest text-ink mb-2">
-          No Events Logged
-        </h3>
-        <p className="text-sm text-muted">
-          No events have been published yet. Please check back later or use the admin console to add events.
-        </p>
-      </div>
-    );
-  }
-
   const filteredEvents = useMemo(() => {
     let result = events;
     
@@ -56,6 +43,19 @@ export function EventSearch({ events, chapters }: { events: any[]; chapters: any
     }
     return result;
   }, [events, deferredQuery, selectedChapter]);
+
+  if (events.length === 0) {
+    return (
+      <div className="mt-12 border border-line p-8 bg-surface-soft text-center flex flex-col items-center justify-center min-h-[240px]">
+        <h3 className="font-mono text-sm font-bold uppercase tracking-widest text-ink mb-2">
+          No Events Logged
+        </h3>
+        <p className="text-sm text-muted">
+          No events have been published yet. Please check back later or use the admin console to add events.
+        </p>
+      </div>
+    );
+  }
 
   const updateParams = (newQuery: string, newChapter: string) => {
     const params = new URLSearchParams(searchParams.toString());

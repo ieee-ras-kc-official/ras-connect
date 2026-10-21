@@ -2,8 +2,6 @@
 
 import {
   MagnifyingGlassIcon,
-  SlidersHorizontalIcon,
-  XIcon,
 } from "@phosphor-icons/react";
 import { motion } from "motion/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -158,7 +156,7 @@ export function ArchiveBrowser({ events, chapters }: ArchiveBrowserProps) {
             All
           </button>
           {chapters.map((chapter) => {
-            let shortName = chapter.name
+            const shortName = chapter.name
               .replace("Robotics Society", "")
               .replace("IEEE RAS", "")
               .replace("RAS SBC", "")

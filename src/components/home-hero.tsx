@@ -285,7 +285,7 @@ export function HomeHero({ events, chaptersCount, eventsCount }: HomeHeroProps) 
               <div className="border border-line p-8 bg-surface-soft text-center flex flex-col items-center justify-center min-h-[300px]">
                 <span className="inline-block size-3 bg-brand mb-4" />
                 <h3 className="font-mono text-xs font-bold uppercase tracking-widest text-ink mb-2">
-                  // No Featured Events
+                  No Featured Events
                 </h3>
                 <p className="text-xs font-mono text-muted leading-relaxed max-w-[240px]">
                   Use the administrative console to publish events and highlight student chapters.

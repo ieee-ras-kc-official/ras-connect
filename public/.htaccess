@@ -1,13 +1,36 @@
-Options -Indexes
+# Disable Directory Indexing & Directory Listing (Security)
+Options -Indexes -MultiViews
+
+# Security: Deny access to hidden dot files (.env, .git, etc.)
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# HTTP Security Headers
+<IfModule mod_headers.c>
+    # Protect against MIME sniffing
+    Header set X-Content-Type-Options "nosniff"
+    # Protect against Clickjacking
+    Header set X-Frame-Options "SAMEORIGIN"
+    # Enable XSS Filter
+    Header set X-XSS-Protection "1; mode=block"
+    # Control Referrer Information
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    # Enforce HTTPS HSTS (1 year)
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=HTTPS
+    # Disable sensitive API features
+    Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
 
 RewriteEngine On
 RewriteBase /
 
-# Force HTTPS redirect
+# Force HTTPS Redirect
 RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-# Force trailing slash on all directories/paths (excluding files)
+# Force trailing slash on all directories/paths (excluding physical files)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_URI} !(.*)/$
 RewriteRule ^(.*)$ /$1/ [L,R=301]

@@ -21,6 +21,16 @@ export function ChapterSearch({ chapters }: { chapters: Chapter[] }) {
   const query = searchParams.get("q") ?? "";
   const deferredQuery = useDeferredValue(query);
 
+  const results = useMemo(() => {
+    const normalized = deferredQuery.trim().toLocaleLowerCase();
+    if (!normalized) return chapters;
+    return chapters.filter((chapter) =>
+      [chapter.name, chapter.college, chapter.location].some((value) =>
+        value.toLocaleLowerCase().includes(normalized),
+      ),
+    );
+  }, [chapters, deferredQuery]);
+
   if (chapters.length === 0) {
     return (
       <div className="mt-12 border border-line p-8 bg-surface-soft text-center flex flex-col items-center justify-center min-h-[240px]">
@@ -33,16 +43,6 @@ export function ChapterSearch({ chapters }: { chapters: Chapter[] }) {
       </div>
     );
   }
-
-  const results = useMemo(() => {
-    const normalized = deferredQuery.trim().toLocaleLowerCase();
-    if (!normalized) return chapters;
-    return chapters.filter((chapter) =>
-      [chapter.name, chapter.college, chapter.location].some((value) =>
-        value.toLocaleLowerCase().includes(normalized),
-      ),
-    );
-  }, [chapters, deferredQuery]);
 
   const setQuery = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());

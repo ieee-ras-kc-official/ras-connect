@@ -16,3 +16,4 @@
 .env
 # typescript
 *.tsbuildinfo
+cpanel_build.zip

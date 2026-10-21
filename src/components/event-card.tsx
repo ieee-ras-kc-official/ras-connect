@@ -1,6 +1,5 @@
 "use client";
 
-import { ImageBrokenIcon } from "@phosphor-icons/react";
 import { motion, useReducedMotion } from "motion/react";
 import Link from "next/link";
 import { useState } from "react";
@@ -19,18 +18,19 @@ type EventCardProps = {
 export function EventCard({
   event,
   className = "",
-  priority = false,
   index = 0,
 }: EventCardProps) {
   const reduceMotion = useReducedMotion();
   
   const dateStr = typeof event.date === "string" 
     ? event.date 
-    : (event.date as any)?.label || "";
+    : (event.date as { label?: string } | undefined)?.label || "";
   const isArchived = event.archived || isEventPassed(dateStr);
 
   const parsedYear = Date.parse(dateStr);
-  const eventYear = !isNaN(parsedYear) ? new Date(parsedYear).getFullYear() : ((event.date as any)?.year || "");
+  const eventYear = !isNaN(parsedYear)
+    ? new Date(parsedYear).getFullYear()
+    : ((event.date as { year?: number } | undefined)?.year || "");
 
   const [failed, setFailed] = useState(false);
 

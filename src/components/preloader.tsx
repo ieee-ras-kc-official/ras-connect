@@ -10,11 +10,8 @@ type PreloaderProps = {
 
 export function Preloader({ onComplete }: PreloaderProps) {
   const [loading, setLoading] = useState(true);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    
     const finishLoading = () => {
       setLoading(false);
       if (onComplete) {
@@ -33,8 +30,6 @@ export function Preloader({ onComplete }: PreloaderProps) {
       return () => window.removeEventListener("load", handleLoad);
     }
   }, [onComplete]);
-
-  if (!mounted) return null;
 
   return (
     <AnimatePresence>
