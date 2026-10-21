@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { EventPageClient } from "./EventPageClient";
 import { API_BASE_URL } from "@/config/api";
+import { events as fallbackEvents } from "@/data/mock-data";
 
 type EventPageProps = {
   params: Promise<{ eventSlug: string }>;
@@ -19,11 +20,14 @@ async function fetchEvent(slug: string) {
 export async function generateStaticParams() {
   try {
     const res = await fetch(`${API_BASE_URL}/api/events`);
-    if (!res.ok) return [];
+    if (!res.ok) throw new Error("Fetch failed");
     const events = await res.json();
+    if (!Array.isArray(events) || events.length === 0) {
+      return fallbackEvents.map((event) => ({ eventSlug: event.slug }));
+    }
     return events.map((event: any) => ({ eventSlug: event.slug }));
   } catch (err) {
-    return [];
+    return fallbackEvents.map((event) => ({ eventSlug: event.slug }));
   }
 }
 

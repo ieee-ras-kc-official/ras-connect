@@ -85,7 +85,29 @@ export default function AdminDashboardPage() {
   }, [eventImageFile]);
 
   // Active Tab State
-  const [activeTab, setActiveTab] = useState<"events" | "chapters" | "subadmins">("events");
+  const [activeTab, setActiveTab] = useState<"events" | "chapters" | "subadmins" | "account">("events");
+
+  // Sub-Admin Chapter Logo & Details State
+  const [subChapterDesc, setSubChapterDesc] = useState("");
+  const [subChapterLogoFile, setSubChapterLogoFile] = useState<File | null>(null);
+  const [subChapterLogoPreview, setSubChapterLogoPreview] = useState("");
+  const [uploadingChapterLogo, setUploadingChapterLogo] = useState(false);
+
+  // Self-Service Password Reset State
+  const [selfCurrentPassword, setSelfCurrentPassword] = useState("");
+  const [selfNewPassword, setSelfNewPassword] = useState("");
+  const [selfConfirmPassword, setSelfConfirmPassword] = useState("");
+  const [changingPassword, setChangingPassword] = useState(false);
+
+  useEffect(() => {
+    if (!subChapterLogoFile) {
+      setSubChapterLogoPreview("");
+      return;
+    }
+    const objectUrl = URL.createObjectURL(subChapterLogoFile);
+    setSubChapterLogoPreview(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [subChapterLogoFile]);
 
   // Event Editing and Rejection State
   const [editingEventSlug, setEditingEventSlug] = useState<string | null>(null);
@@ -159,6 +181,11 @@ export default function AdminDashboardPage() {
 
       if (activeRole === "superadmin") {
         await fetchSubadmins();
+      } else if (activeSlug) {
+        const myChapter = chaptersData.find((c: DbChapter) => c.slug === activeSlug);
+        if (myChapter && myChapter.description) {
+          setSubChapterDesc(myChapter.description);
+        }
       }
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -262,6 +289,98 @@ export default function AdminDashboardPage() {
 
 
 
+
+  const handleSubAdminUpdateChapter = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!adminChapterSlug) {
+      toast.error("No assigned chapter found for this account.");
+      return;
+    }
+
+    setUploadingChapterLogo(true);
+    const token = localStorage.getItem("admin_token");
+
+    try {
+      const formData = new FormData();
+      if (subChapterLogoFile) {
+        formData.append("image", subChapterLogoFile);
+      }
+      if (subChapterDesc) {
+        formData.append("description", subChapterDesc);
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/chapters/${adminChapterSlug}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (response.ok && data.success) {
+        toast.success("Chapter logo & details updated successfully!");
+        setSubChapterLogoFile(null);
+        setSubChapterLogoPreview("");
+        const fileInput = document.getElementById("sub-chapter-logo") as HTMLInputElement;
+        if (fileInput) fileInput.value = "";
+        await fetchData();
+      } else {
+        toast.error(data.error || "Failed to update chapter.");
+      }
+    } catch (err) {
+      console.error("Error updating chapter logo:", err);
+      toast.error("Network error updating chapter logo.");
+    } finally {
+      setUploadingChapterLogo(false);
+    }
+  };
+
+  const handleSelfPasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selfNewPassword || selfNewPassword.length < 6) {
+      toast.error("New password must be at least 6 characters long.");
+      return;
+    }
+
+    if (selfNewPassword !== selfConfirmPassword) {
+      toast.error("New passwords do not match.");
+      return;
+    }
+
+    setChangingPassword(true);
+    const token = localStorage.getItem("admin_token");
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/admin/change-password`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          currentPassword: selfCurrentPassword,
+          newPassword: selfNewPassword,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok && data.success) {
+        toast.success("Your password has been updated successfully!");
+        setSelfCurrentPassword("");
+        setSelfNewPassword("");
+        setSelfConfirmPassword("");
+      } else {
+        toast.error(data.error || "Failed to update password.");
+      }
+    } catch (err) {
+      console.error("Error updating password:", err);
+      toast.error("Network error updating password.");
+    } finally {
+      setChangingPassword(false);
+    }
+  };
+
   const handleAddChapter = async (e: React.FormEvent) => {
     e.preventDefault();
     if (editingChapterSlug) {
@@ -326,6 +445,7 @@ export default function AdminDashboardPage() {
       toast.error("Network error occurred.");
     }
   };
+
 
   const handleStartEditChapter = (chapter: DbChapter) => {
     setEditingChapterSlug(chapter.slug);
@@ -638,7 +758,7 @@ export default function AdminDashboardPage() {
             }`}
           >
             <List size={16} />
-            SB Chapters
+            {role === "subadmin" ? "My Chapter & Logo" : "SB Chapters"}
           </button>
 
           {/* Sub-Admins Tab (Superadmin only) */}
@@ -655,6 +775,19 @@ export default function AdminDashboardPage() {
               Sub-Admins
             </button>
           )}
+
+          {/* Password & Security Tab */}
+          <button
+            onClick={() => setActiveTab("account")}
+            className={`flex items-center gap-3 px-4 py-3 text-xs font-mono uppercase tracking-wider border transition-colors whitespace-nowrap lg:w-full rounded-none ${
+              activeTab === "account"
+                ? "bg-ink text-white border-ink font-bold"
+                : "bg-transparent text-muted border-transparent hover:bg-surface-soft hover:text-ink"
+            }`}
+          >
+            <Key size={16} />
+            Password & Security
+          </button>
         </div>
 
         {/* Right Column: Dynamic Panel Content */}
@@ -1034,11 +1167,24 @@ export default function AdminDashboardPage() {
                           key={chapter.slug}
                           className="border border-line p-4 bg-surface flex items-center justify-between gap-4"
                         >
-                          <div>
-                            <h3 className="text-sm font-bold text-ink uppercase">{chapter.name}</h3>
-                            <p className="text-[11px] text-muted font-mono mt-1">
-                              {chapter.college} • {chapter.location}
-                            </p>
+                          <div className="flex items-center gap-3">
+                            <div className="size-11 bg-surface-soft border border-line shrink-0 p-1 flex items-center justify-center overflow-hidden">
+                              <img
+                                src={
+                                  chapter.logo && chapter.logo !== "/card1.jpeg"
+                                    ? (chapter.logo.startsWith("/uploads/") ? `${API_BASE_URL}${chapter.logo}` : chapter.logo)
+                                    : "/images/brand/default-chapter-icon.svg"
+                                }
+                                alt={chapter.name}
+                                className="max-h-full max-w-full object-contain"
+                              />
+                            </div>
+                            <div>
+                              <h3 className="text-sm font-bold text-ink uppercase">{chapter.name}</h3>
+                              <p className="text-[11px] text-muted font-mono mt-0.5">
+                                {chapter.college} • {chapter.location}
+                              </p>
+                            </div>
                           </div>
                           {role === "superadmin" && (
                             <div className="flex gap-2">
@@ -1200,14 +1346,122 @@ export default function AdminDashboardPage() {
                   </div>
                 ) : (
                   <div className="border border-line p-6 bg-surface">
-                    <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-muted block mb-3">
-                      // Access Information
+                    <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-brand block mb-2">
+                      // Chapter Profile & Branding
                     </span>
-                    <h3 className="text-sm font-bold uppercase text-ink">View Only Mode</h3>
-                    <p className="text-xs text-muted font-mono mt-2 leading-relaxed">
-                      Sub-admin accounts do not have permission to register or edit Student Branch Chapters.
-                      Please contact a Super Admin if you need updates.
-                    </p>
+                    <h2 className="text-lg font-bold uppercase tracking-tight text-ink border-b border-line pb-2 mb-4">
+                      My Chapter Logo & Bio
+                    </h2>
+
+                    {(() => {
+                      const currentChapter = chapters.find((c) => c.slug === adminChapterSlug);
+                      return (
+                        <form onSubmit={handleSubAdminUpdateChapter} className="space-y-5">
+                          {/* Current Chapter Name & Info */}
+                          <div className="bg-surface-soft p-3 border border-line">
+                            <span className="font-mono text-[9px] uppercase tracking-wider text-muted block mb-0.5">
+                              Host Chapter
+                            </span>
+                            <p className="text-sm font-bold uppercase text-brand font-mono">
+                              {currentChapter?.name || adminChapterSlug}
+                            </p>
+                            <p className="text-[11px] font-mono text-muted mt-0.5">
+                              {currentChapter?.college} • {currentChapter?.location}
+                            </p>
+                          </div>
+
+                          {/* Current Logo Display */}
+                          <div>
+                            <label className="font-mono text-[10px] uppercase tracking-widest text-muted block mb-2">
+                              Chapter Logo Preview
+                            </label>
+                            <div className="flex items-center gap-4">
+                              <div className="size-20 border border-line bg-surface-soft p-2 flex items-center justify-center shrink-0 overflow-hidden">
+                                <img
+                                  src={
+                                    subChapterLogoPreview ||
+                                    (currentChapter?.logo && currentChapter.logo !== "/card1.jpeg"
+                                      ? (currentChapter.logo.startsWith("/uploads/")
+                                          ? `${API_BASE_URL}${currentChapter.logo}`
+                                          : currentChapter.logo)
+                                      : "/images/brand/default-chapter-icon.svg")
+                                  }
+                                  alt="Chapter Logo"
+                                  className="max-h-full max-w-full object-contain"
+                                />
+                              </div>
+                              <div className="text-xs font-mono text-muted leading-relaxed">
+                                {subChapterLogoPreview
+                                  ? "New logo selected (previewing)"
+                                  : currentChapter?.logo && currentChapter.logo !== "/card1.jpeg"
+                                  ? "Custom logo uploaded"
+                                  : "Default chapter icon in use"}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Logo file input */}
+                          <div>
+                            <label className="font-mono text-[10px] uppercase tracking-widest text-muted block mb-2">
+                              Upload New Chapter Logo
+                            </label>
+                            <div className="border border-dashed border-line p-4 text-center cursor-pointer hover:bg-surface-soft transition-colors relative flex flex-col items-center gap-2">
+                              <ImageIcon size={24} className="text-muted" />
+                              <span className="text-xs text-muted font-mono">
+                                {subChapterLogoFile ? subChapterLogoFile.name : "Select PNG / JPG / SVG logo (Square recommended, under 5MB)"}
+                              </span>
+                              <input
+                                id="sub-chapter-logo"
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => {
+                                  if (e.target.files && e.target.files.length > 0) {
+                                    const file = e.target.files[0];
+                                    if (file.size > 5 * 1024 * 1024) {
+                                      toast.error("Upload under 5MB");
+                                      e.target.value = "";
+                                      setSubChapterLogoFile(null);
+                                    } else {
+                                      setSubChapterLogoFile(file);
+                                    }
+                                  }
+                                }}
+                                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Description input */}
+                          <div>
+                            <label className="font-mono text-[10px] uppercase tracking-widest text-muted block mb-1">
+                              Chapter Description / Bio
+                            </label>
+                            <textarea
+                              value={subChapterDesc}
+                              onChange={(e) => setSubChapterDesc(e.target.value)}
+                              placeholder="Describe your student branch chapter activities, team, and focus..."
+                              rows={3}
+                              className="w-full bg-transparent py-2.5 border-b border-line text-sm text-ink outline-none focus:border-brand transition-colors resize-none rounded-none"
+                            />
+                          </div>
+
+                          <button
+                            type="submit"
+                            disabled={uploadingChapterLogo}
+                            className="w-full min-h-12 bg-ink text-white font-mono text-xs uppercase tracking-wider transition-colors hover:bg-brand disabled:opacity-50 rounded-none flex items-center justify-center gap-2 mt-4"
+                          >
+                            {uploadingChapterLogo ? (
+                              <span className="animate-pulse">Uploading to Cloudinary...</span>
+                            ) : (
+                              <>
+                                <Plus size={14} />
+                                Save Chapter Logo & Bio
+                              </>
+                            )}
+                          </button>
+                        </form>
+                      );
+                    })()}
                   </div>
                 )}
               </div>
@@ -1281,6 +1535,86 @@ export default function AdminDashboardPage() {
                   ))
                 )}
               </div>
+            </div>
+          )}
+
+          {activeTab === "account" && (
+            <div className="border border-line p-6 bg-surface max-w-2xl">
+              <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-brand block mb-2">
+                // Security Credentials
+              </span>
+              <h2 className="text-lg font-bold uppercase tracking-tight text-ink border-b border-line pb-2 mb-4">
+                Password Reset
+              </h2>
+
+              <p className="text-xs font-mono text-muted mb-6 leading-relaxed">
+                Update the password for your account <span className="text-brand font-bold">@{adminUser}</span> ({role === "superadmin" ? "Super Admin" : "Sub-Admin"}).
+              </p>
+
+              {role === "superadmin" ? (
+                <div className="bg-surface-soft p-4 border border-line text-xs font-mono text-muted leading-relaxed">
+                  <p className="text-ink font-bold mb-1">SUPER ADMIN CREDENTIALS</p>
+                  Super Admin credentials are controlled via the server environment variables (<code className="text-brand">ADMIN_PASSWORD</code>). You can manage and reset all Student Branch sub-admin passwords directly from the <strong>Sub-Admins</strong> tab.
+                </div>
+              ) : (
+                <form onSubmit={handleSelfPasswordChange} className="space-y-4">
+                  <div>
+                    <label className="font-mono text-[10px] uppercase tracking-widest text-muted block mb-1">
+                      Current Password (Optional)
+                    </label>
+                    <input
+                      type="password"
+                      value={selfCurrentPassword}
+                      onChange={(e) => setSelfCurrentPassword(e.target.value)}
+                      placeholder="Enter current password if known"
+                      className="w-full bg-transparent py-2.5 border-b border-line text-sm text-ink outline-none focus:border-brand transition-colors rounded-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-mono text-[10px] uppercase tracking-widest text-muted block mb-1">
+                      New Password (Minimum 6 characters)
+                    </label>
+                    <input
+                      type="password"
+                      required
+                      value={selfNewPassword}
+                      onChange={(e) => setSelfNewPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full bg-transparent py-2.5 border-b border-line text-sm text-ink outline-none focus:border-brand transition-colors rounded-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-mono text-[10px] uppercase tracking-widest text-muted block mb-1">
+                      Confirm New Password
+                    </label>
+                    <input
+                      type="password"
+                      required
+                      value={selfConfirmPassword}
+                      onChange={(e) => setSelfConfirmPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full bg-transparent py-2.5 border-b border-line text-sm text-ink outline-none focus:border-brand transition-colors rounded-none"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={changingPassword}
+                    className="w-full min-h-12 bg-ink text-white font-mono text-xs uppercase tracking-wider transition-colors hover:bg-brand disabled:opacity-50 rounded-none flex items-center justify-center gap-2 mt-6"
+                  >
+                    {changingPassword ? (
+                      <span className="animate-pulse">Updating Password...</span>
+                    ) : (
+                      <>
+                        <Key size={14} />
+                        Update My Password
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
             </div>
           )}
 

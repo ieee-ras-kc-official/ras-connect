@@ -118,10 +118,11 @@ export function ChapterSearch({ chapters }: { chapters: Chapter[] }) {
                 >
                   <span className="relative block aspect-square w-[72px] overflow-hidden bg-surface-soft border border-line rounded-none">
                     <ImageWithFallback
-                      src={chapter.image}
-                      alt={chapter.imageAlt}
+                      src={(chapter as any).logo || chapter.image || "/images/brand/default-chapter-icon.svg"}
+                      alt={chapter.name}
+                      fallbackSrc="/images/brand/default-chapter-icon.svg"
                       sizes="72px"
-                      className="object-cover transition-transform duration-500 ease-brand motion-safe:group-hover:scale-[1.03]"
+                      className="object-contain p-1 transition-transform duration-500 ease-brand motion-safe:group-hover:scale-[1.03]"
                     />
                   </span>
                   <span className="min-w-0">

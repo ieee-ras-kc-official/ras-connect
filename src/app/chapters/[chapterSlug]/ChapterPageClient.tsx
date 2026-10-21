@@ -14,6 +14,7 @@ type Props = {
 };
 
 import { isEventPassed } from "@/utils/date";
+import { ImageWithFallback } from "@/components/image-with-fallback";
 
 export function ChapterPageClient({ chapterSlug }: Props) {
   const [chapter, setChapter] = useState<any>(null);
@@ -78,12 +79,24 @@ export function ChapterPageClient({ chapterSlug }: Props) {
 
           <div className="mt-9 max-w-3xl">
             <Reveal>
-              <h1 className="text-balance text-3xl font-black leading-tight tracking-tight text-ink sm:text-4xl md:text-5xl uppercase">
-                {chapter.name}
-              </h1>
-              <p className="mt-2 font-mono text-xs uppercase tracking-wider text-muted">
-                {chapter.college}
-              </p>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-5 mb-6">
+                <div className="size-20 sm:size-24 bg-surface-soft border border-line shrink-0 p-2 overflow-hidden relative">
+                  <ImageWithFallback
+                    src={chapter.logo || chapter.image || "/images/brand/default-chapter-icon.svg"}
+                    alt={chapter.name}
+                    fallbackSrc="/images/brand/default-chapter-icon.svg"
+                    className="object-contain w-full h-full"
+                  />
+                </div>
+                <div>
+                  <h1 className="text-balance text-3xl font-black leading-tight tracking-tight text-ink sm:text-4xl md:text-5xl uppercase">
+                    {chapter.name}
+                  </h1>
+                  <p className="mt-2 font-mono text-xs uppercase tracking-wider text-muted">
+                    {chapter.college} {chapter.location && `• ${chapter.location}`}
+                  </p>
+                </div>
+              </div>
               <p className="mt-4 text-sm leading-6 text-muted">
                 {chapter.description}
               </p>

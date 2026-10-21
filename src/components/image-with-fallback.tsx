@@ -6,6 +6,7 @@ import { API_BASE_URL } from "@/config/api";
 type ImageWithFallbackProps = {
   src: string | null;
   alt: string;
+  fallbackSrc?: string;
   className?: string;
   sizes?: string;
   priority?: boolean;
@@ -14,6 +15,7 @@ type ImageWithFallbackProps = {
 export function ImageWithFallback({
   src,
   alt,
+  fallbackSrc = "/images/brand/default-chapter-icon.svg",
   className = "object-cover",
   priority = false,
 }: ImageWithFallbackProps) {
@@ -26,8 +28,13 @@ export function ImageWithFallback({
     resolvedSrc = `${API_BASE_URL}${rawSrc}`;
   }
 
+  // If rawSrc was the old mock card1.jpeg, use default chapter icon fallback
+  if (resolvedSrc === "/card1.jpeg" && fallbackSrc !== "/card1.jpeg") {
+    resolvedSrc = fallbackSrc;
+  }
+
   const failed = Boolean(resolvedSrc && failedSrc === resolvedSrc);
-  const finalSrc = !resolvedSrc || failed ? "/card1.jpeg" : resolvedSrc;
+  const finalSrc = !resolvedSrc || failed ? fallbackSrc : resolvedSrc;
 
   return (
     <img
