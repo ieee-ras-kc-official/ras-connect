@@ -7,6 +7,7 @@ import { ChapterExplorer } from "@/components/chapter-explorer";
 import { HomeHero } from "@/components/home-hero";
 import { Reveal } from "@/components/reveal";
 import { EventCard } from "@/components/event-card";
+import { LeaderboardSection } from "@/components/leaderboard-section";
 import { API_BASE_URL } from "@/config/api";
 import { isEventPassed } from "@/utils/date";
 
@@ -194,6 +195,8 @@ export default function HomePage() {
           </Reveal>
         </div>
       </section>
+
+      <LeaderboardSection />
 
       {/* Explore Student Branch Chapters Section */}
       <section className="section-space bg-surface border-b border-line" aria-labelledby="chapters-heading">

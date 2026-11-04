@@ -1,13 +1,17 @@
 "use client";
 
 import { motion, AnimatePresence } from "motion/react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { SignOut, Plus, Trash, Calendar, MapPin, ShieldCheck, Image as ImageIcon, Key, List, Users } from "@phosphor-icons/react";
+import { SignOut, Plus, Trash, Calendar, MapPin, ShieldCheck, Image as ImageIcon, Key, List, Users, ClipboardText } from "@phosphor-icons/react";
+import { FeedbackReviewPanel } from "@/components/feedback-review-panel";
 import { useToast } from "@/components/toast";
 import { API_BASE_URL } from "@/config/api";
+import type { Feedback } from "@/utils/feedback";
 
 type DbChapter = {
+  _id: string;
   slug: string;
   name: string;
   college: string;
@@ -15,6 +19,7 @@ type DbChapter = {
   description: string;
   logo: string;
   featured: boolean;
+  cluster?: number | null;
 };
 
 type DbEvent = {
@@ -42,6 +47,7 @@ export default function AdminDashboardPage() {
   const [adminChapterSlug, setAdminChapterSlug] = useState("");
   const [chapters, setChapters] = useState<DbChapter[]>([]);
   const [events, setEvents] = useState<DbEvent[]>([]);
+  const [myFeedback, setMyFeedback] = useState<Feedback[]>([]);
 
   // Sub-Admins Management State
   const [subadmins, setSubadmins] = useState<any[]>([]);
@@ -60,6 +66,7 @@ export default function AdminDashboardPage() {
   const [chapterCollege, setChapterCollege] = useState("");
   const [chapterLocation, setChapterLocation] = useState("");
   const [chapterDesc, setChapterDesc] = useState("");
+  const [chapterCluster, setChapterCluster] = useState("");
   const [editingChapterSlug, setEditingChapterSlug] = useState<string | null>(null);
 
   // Event Form State
@@ -85,7 +92,7 @@ export default function AdminDashboardPage() {
   }, [eventImageFile]);
 
   // Active Tab State
-  const [activeTab, setActiveTab] = useState<"events" | "chapters" | "subadmins" | "account">("events");
+  const [activeTab, setActiveTab] = useState<"events" | "chapters" | "feedback" | "subadmins" | "account">("events");
 
   // Sub-Admin Chapter Logo & Details State
   const [subChapterDesc, setSubChapterDesc] = useState("");
@@ -185,6 +192,12 @@ export default function AdminDashboardPage() {
         const myChapter = chaptersData.find((c: DbChapter) => c.slug === activeSlug);
         if (myChapter && myChapter.description) {
           setSubChapterDesc(myChapter.description);
+        }
+        const feedbackRes = await fetch(`${API_BASE_URL}/api/feedback`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (feedbackRes.ok) {
+          setMyFeedback(await feedbackRes.json());
         }
       }
     } catch (err) {
@@ -408,12 +421,14 @@ export default function AdminDashboardPage() {
             college: chapterCollege,
             location: chapterLocation,
             description: chapterDesc,
+            cluster: chapterCluster,
           }
         : {
             name: chapterName,
             college: chapterCollege,
             location: chapterLocation,
             description: chapterDesc,
+            cluster: chapterCluster,
             username: subUsername,
             password: subPassword,
           };
@@ -433,6 +448,7 @@ export default function AdminDashboardPage() {
         setChapterCollege("");
         setChapterLocation("");
         setChapterDesc("");
+        setChapterCluster("");
         setSubUsername("");
         setSubPassword("");
         setEditingChapterSlug(null);
@@ -453,6 +469,7 @@ export default function AdminDashboardPage() {
     setChapterCollege(chapter.college);
     setChapterLocation(chapter.location);
     setChapterDesc(chapter.description || "");
+    setChapterCluster(chapter.cluster ? String(chapter.cluster) : "");
     const formEl = document.getElementById("chapter-form-section");
     if (formEl) {
       formEl.scrollIntoView({ behavior: "smooth" });
@@ -465,6 +482,7 @@ export default function AdminDashboardPage() {
     setChapterCollege("");
     setChapterLocation("");
     setChapterDesc("");
+    setChapterCluster("");
     setSubUsername("");
     setSubPassword("");
   };
@@ -761,6 +779,21 @@ export default function AdminDashboardPage() {
             {role === "subadmin" ? "My Chapter & Logo" : "SB Chapters"}
           </button>
 
+          {/* Feedback Review Tab (Superadmin only) */}
+          {role === "superadmin" && (
+            <button
+              onClick={() => setActiveTab("feedback")}
+              className={`flex items-center gap-3 px-4 py-3 text-xs font-mono uppercase tracking-wider border transition-colors whitespace-nowrap lg:w-full rounded-none ${
+                activeTab === "feedback"
+                  ? "bg-ink text-white border-ink font-bold"
+                  : "bg-transparent text-muted border-transparent hover:bg-surface-soft hover:text-ink"
+              }`}
+            >
+              <ClipboardText size={16} />
+              Feedback Review
+            </button>
+          )}
+
           {/* Sub-Admins Tab (Superadmin only) */}
           {role === "superadmin" && (
             <button
@@ -877,6 +910,26 @@ export default function AdminDashboardPage() {
                                     // Reason: {event.rejectionReason}
                                   </div>
                                 )}
+
+                                {role === "subadmin" && event.status === "verified" && (() => {
+                                  const feedback = myFeedback.find((item) => item.event?.slug === event.slug);
+                                  const label = !feedback
+                                    ? "Fill Feedback Form"
+                                    : feedback.status === "verified"
+                                    ? `${feedback.points.total} Points Awarded`
+                                    : feedback.status === "rejected"
+                                    ? "Feedback Rejected: Resubmit"
+                                    : "Feedback Awaiting Verification";
+                                  return (
+                                    <Link
+                                      href={`/events/${event.slug}#feedback`}
+                                      className="mt-3 inline-flex items-center gap-1.5 border border-brand px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-wider text-brand transition-colors hover:bg-brand hover:text-white"
+                                    >
+                                      <ClipboardText size={12} />
+                                      {label}
+                                    </Link>
+                                  );
+                                })()}
                               </div>
                             </div>
 
@@ -1183,6 +1236,7 @@ export default function AdminDashboardPage() {
                               <h3 className="text-sm font-bold text-ink uppercase">{chapter.name}</h3>
                               <p className="text-[11px] text-muted font-mono mt-0.5">
                                 {chapter.college} • {chapter.location}
+                                {chapter.cluster ? ` • Cluster ${chapter.cluster}` : ""}
                               </p>
                             </div>
                           </div>
@@ -1275,6 +1329,25 @@ export default function AdminDashboardPage() {
                           rows={2}
                           className="w-full bg-transparent py-2.5 border-b border-line text-sm text-ink outline-none focus:border-brand transition-colors resize-none rounded-none"
                         />
+                      </div>
+
+                      <div>
+                        <label htmlFor="chapter-cluster" className="font-mono text-[10px] uppercase tracking-widest text-muted block mb-1">
+                          Cluster
+                        </label>
+                        <select
+                          id="chapter-cluster"
+                          value={chapterCluster}
+                          onChange={(e) => setChapterCluster(e.target.value)}
+                          className="w-full bg-transparent py-2.5 border-b border-line text-sm text-ink outline-none focus:border-brand transition-colors rounded-none"
+                        >
+                          <option value="">No cluster (not on leaderboard)</option>
+                          {Array.from({ length: 15 }, (_, index) => index + 1).map((cluster) => (
+                            <option key={cluster} value={cluster}>
+                              Cluster {cluster}
+                            </option>
+                          ))}
+                        </select>
                       </div>
 
                       {!editingChapterSlug && (
@@ -1466,6 +1539,10 @@ export default function AdminDashboardPage() {
                 )}
               </div>
             </div>
+          )}
+
+          {activeTab === "feedback" && role === "superadmin" && (
+            <FeedbackReviewPanel chapters={chapters} />
           )}
 
           {activeTab === "subadmins" && role === "superadmin" && (

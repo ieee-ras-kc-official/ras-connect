@@ -5,9 +5,11 @@ import Link from "next/link";
 import { ArrowLeftIcon, CalendarBlankIcon, MapPinIcon } from "@phosphor-icons/react";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { EventCard } from "@/components/event-card";
+import { EventFeedbackForm } from "@/components/event-feedback-form";
 import { ImageWithFallback } from "@/components/image-with-fallback";
 import { Reveal } from "@/components/reveal";
 import { API_BASE_URL } from "@/config/api";
+import { EVENT_FALLBACK_SLUG } from "@/config/routes";
 import { isEventPassed } from "@/utils/date";
 
 type Props = {
@@ -23,11 +25,19 @@ export function EventPageClient({ eventSlug }: Props) {
   useEffect(() => {
     async function loadData() {
       try {
-        const eventRes = await fetch(`${API_BASE_URL}/api/events/${eventSlug}`);
+        // Events published after the last build are served by the fallback page,
+        // so the real slug has to come from the URL.
+        const slug = eventSlug === EVENT_FALLBACK_SLUG
+          ? window.location.pathname.split("/").filter(Boolean).pop()
+          : eventSlug;
+        const eventRes = await fetch(`${API_BASE_URL}/api/events/${slug}`);
         if (!eventRes.ok) throw new Error("Event not found");
         
         const eventData = await eventRes.json();
         setEvent(eventData);
+        if (eventSlug === EVENT_FALLBACK_SLUG) {
+          document.title = `${eventData.name} | RAS Connect IEEE`;
+        }
 
         // Fetch related Chapter & Events
         if (eventData.chapterSlug) {
@@ -219,6 +229,8 @@ export function EventPageClient({ eventSlug }: Props) {
               </section>
             </Reveal>
           </div>
+
+          <EventFeedbackForm eventSlug={event.slug} />
 
           {gallery.length ? (
             <section className="mt-16 border-t border-line pt-12 md:mt-20 md:pt-16" aria-labelledby="gallery-heading">

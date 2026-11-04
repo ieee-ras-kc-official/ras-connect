@@ -45,7 +45,7 @@ Options -Indexes -MultiViews
     Header set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
 
     # Content Security Policy (allows backend API connection)
-    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://connect.ras.ieeekerala.org; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://rasconnect-v4sc.vercel.app https://ras-day.vercel.app https://connect.ras.ieeekerala.org; frame-ancestors 'self';"
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://connect.ras.ieeekerala.org; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://api.cloudinary.com https://rasconnect-v4sc.vercel.app https://ras-day.vercel.app https://connect.ras.ieeekerala.org; frame-ancestors 'self';"
 </IfModule>
 
 # 6. Gzip Compression for Performance (Boosts Google PageSpeed & SEO)
@@ -77,6 +77,12 @@ RewriteBase /
 RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
+# Client-side navigation to an event with no prebuilt page requests its .txt payload.
+# Answer 404 before the trailing-slash redirect below: the Next.js router then does a
+# full page load of the event, whereas following a redirect would land it on the wrong URL.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^events/[^/]+/.+\.txt$ - [R=404,L]
+
 # Force Trailing Slash on directories (SEO Canonical Structure)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_URI} !(.*)/$
@@ -94,6 +100,10 @@ RewriteRule ^(.*)$ /$1.html [L]
 # Clean Directory Index: Check for directory/index.html
 RewriteCond %{DOCUMENT_ROOT}/$1/index.html -f
 RewriteRule ^(.*)$ /$1/index.html [L]
+
+# Events published after the last build have no prebuilt page: serve the event
+# fallback page, which loads the event named in the URL
+RewriteRule ^events/[^/]+/?$ /events/__fallback/index.html [L]
 
 # Fallback to index.html for Single-Page Dynamic Routes
 RewriteRule ^ index.html [L]
