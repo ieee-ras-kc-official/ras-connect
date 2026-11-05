@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { SignOut, Plus, Trash, Calendar, MapPin, ShieldCheck, Image as ImageIcon, Key, List, Users, ClipboardText } from "@phosphor-icons/react";
+import { SignOut, Plus, Trash, Calendar, MapPin, ShieldCheck, Image as ImageIcon, Key, List, Users, ClipboardText, SquaresFour } from "@phosphor-icons/react";
+import { ClusterManagerPanel } from "@/components/cluster-manager-panel";
 import { FeedbackReviewPanel } from "@/components/feedback-review-panel";
 import { useToast } from "@/components/toast";
 import { API_BASE_URL } from "@/config/api";
@@ -92,7 +93,7 @@ export default function AdminDashboardPage() {
   }, [eventImageFile]);
 
   // Active Tab State
-  const [activeTab, setActiveTab] = useState<"events" | "chapters" | "feedback" | "subadmins" | "account">("events");
+  const [activeTab, setActiveTab] = useState<"events" | "chapters" | "clusters" | "feedback" | "subadmins" | "account">("events");
 
   // Sub-Admin Chapter Logo & Details State
   const [subChapterDesc, setSubChapterDesc] = useState("");
@@ -778,6 +779,21 @@ export default function AdminDashboardPage() {
             <List size={16} />
             {role === "subadmin" ? "My Chapter & Logo" : "SB Chapters"}
           </button>
+
+          {/* Clusters Tab (Superadmin only) */}
+          {role === "superadmin" && (
+            <button
+              onClick={() => setActiveTab("clusters")}
+              className={`flex items-center gap-3 px-4 py-3 text-xs font-mono uppercase tracking-wider border transition-colors whitespace-nowrap lg:w-full rounded-none ${
+                activeTab === "clusters"
+                  ? "bg-ink text-white border-ink font-bold"
+                  : "bg-transparent text-muted border-transparent hover:bg-surface-soft hover:text-ink"
+              }`}
+            >
+              <SquaresFour size={16} />
+              Clusters
+            </button>
+          )}
 
           {/* Feedback Review Tab (Superadmin only) */}
           {role === "superadmin" && (
@@ -1539,6 +1555,10 @@ export default function AdminDashboardPage() {
                 )}
               </div>
             </div>
+          )}
+
+          {activeTab === "clusters" && role === "superadmin" && (
+            <ClusterManagerPanel chapters={chapters} onChaptersChanged={() => fetchData()} />
           )}
 
           {activeTab === "feedback" && role === "superadmin" && (

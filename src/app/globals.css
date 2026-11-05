@@ -137,3 +137,12 @@ a {
 .animate-preloader-progress {
   animation: preloader-progress 1.4s cubic-bezier(0.2, 0, 0, 1) forwards;
 }
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

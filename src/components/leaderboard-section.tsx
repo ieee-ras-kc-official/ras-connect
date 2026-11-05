@@ -71,7 +71,7 @@ export function LeaderboardSection() {
               role="region"
               aria-labelledby="leaderboard-heading"
               tabIndex={0}
-              className="mt-10 max-h-[640px] overflow-y-auto border border-line bg-surface"
+              className="no-scrollbar mt-10 max-h-[640px] overflow-y-auto border border-line bg-surface"
             >
               <table className="w-full border-collapse text-left">
                 <thead className="sticky top-0 z-10 border-b border-line bg-surface-soft">
