@@ -25,6 +25,11 @@ const navigation = [
     match: (path: string) => path.startsWith("/archive"),
   },
   {
+    label: "Leaderboard",
+    href: "/#leaderboard",
+    match: () => false,
+  },
+  {
     label: "Login",
     href: "/login",
     match: (path: string) => path.startsWith("/login"),
