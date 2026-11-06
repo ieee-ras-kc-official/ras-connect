@@ -51,7 +51,7 @@ export function LeaderboardSection() {
   const headCell = "px-3 py-3 font-mono text-[10px] font-bold uppercase tracking-widest text-muted";
 
   return (
-    <section className="section-space bg-background border-b border-line" aria-labelledby="leaderboard-heading">
+    <section id="leaderboard" className="section-space bg-background border-b border-line" aria-labelledby="leaderboard-heading">
       <div className="page-container">
         <Reveal>
           <h2

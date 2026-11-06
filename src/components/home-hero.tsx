@@ -171,10 +171,10 @@ export function HomeHero({ events, chaptersCount, eventsCount }: HomeHeroProps) 
               Explore chapters
             </Link>
             <Link
-              href="/archive"
+              href="/#leaderboard"
               className="group inline-flex min-h-12 w-full sm:w-auto items-center justify-center gap-2 whitespace-nowrap rounded-none border border-ink bg-transparent px-6 text-xs font-bold uppercase tracking-wider text-brand transition-all duration-300 hover:bg-ink hover:text-white hover:border-ink cursor-pointer"
             >
-              View archive
+              View leaderboard
               <ArrowRightIcon size={15} aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
           </motion.div>

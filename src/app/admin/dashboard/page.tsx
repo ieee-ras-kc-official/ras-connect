@@ -102,7 +102,6 @@ export default function AdminDashboardPage() {
   const [uploadingChapterLogo, setUploadingChapterLogo] = useState(false);
 
   // Self-Service Password Reset State
-  const [selfCurrentPassword, setSelfCurrentPassword] = useState("");
   const [selfNewPassword, setSelfNewPassword] = useState("");
   const [selfConfirmPassword, setSelfConfirmPassword] = useState("");
   const [changingPassword, setChangingPassword] = useState(false);
@@ -373,7 +372,6 @@ export default function AdminDashboardPage() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          currentPassword: selfCurrentPassword,
           newPassword: selfNewPassword,
         }),
       });
@@ -381,7 +379,6 @@ export default function AdminDashboardPage() {
       const data = await response.json();
       if (response.ok && data.success) {
         toast.success("Your password has been updated successfully!");
-        setSelfCurrentPassword("");
         setSelfNewPassword("");
         setSelfConfirmPassword("");
       } else {
@@ -1655,19 +1652,6 @@ export default function AdminDashboardPage() {
                 </div>
               ) : (
                 <form onSubmit={handleSelfPasswordChange} className="space-y-4">
-                  <div>
-                    <label className="font-mono text-[10px] uppercase tracking-widest text-muted block mb-1">
-                      Current Password (Optional)
-                    </label>
-                    <input
-                      type="password"
-                      value={selfCurrentPassword}
-                      onChange={(e) => setSelfCurrentPassword(e.target.value)}
-                      placeholder="Enter current password if known"
-                      className="w-full bg-transparent py-2.5 border-b border-line text-sm text-ink outline-none focus:border-brand transition-colors rounded-none"
-                    />
-                  </div>
-
                   <div>
                     <label className="font-mono text-[10px] uppercase tracking-widest text-muted block mb-1">
                       New Password (Minimum 6 characters)

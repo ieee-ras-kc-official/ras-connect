@@ -1,5 +1,6 @@
 "use client";
 
+import { EyeIcon, EyeSlashIcon } from "@phosphor-icons/react";
 import { motion } from "motion/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -10,6 +11,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -122,15 +124,26 @@ export default function LoginPage() {
               >
                 Password
               </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="off"
-                placeholder="Enter password"
-                className="mt-1 w-full bg-transparent py-2.5 border-b border-line text-base text-ink outline-none focus:outline-none focus:ring-0 focus:border-line focus-visible:outline-none focus-visible:ring-0 focus-visible:border-line active:border-line placeholder:text-muted/60 rounded-none shadow-none focus:shadow-none active:shadow-none focus:bg-transparent active:bg-transparent"
-              />
+              <div className="relative mt-1">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="off"
+                  placeholder="Enter password"
+                  className="w-full bg-transparent py-2.5 pr-10 [&::-ms-reveal]:hidden border-b border-line text-base text-ink outline-none focus:outline-none focus:ring-0 focus:border-line focus-visible:outline-none focus-visible:ring-0 focus-visible:border-line active:border-line placeholder:text-muted/60 rounded-none shadow-none focus:shadow-none active:shadow-none focus:bg-transparent active:bg-transparent"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((shown) => !shown)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-pressed={showPassword}
+                  className="absolute right-0 top-1/2 grid size-10 -translate-y-1/2 place-items-center text-muted transition-colors hover:text-brand cursor-pointer"
+                >
+                  {showPassword ? <EyeSlashIcon size={18} aria-hidden="true" /> : <EyeIcon size={18} aria-hidden="true" />}
+                </button>
+              </div>
             </div>
 
             {/* Submit Button */}
