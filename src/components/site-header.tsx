@@ -1,11 +1,10 @@
 "use client";
 
-import { ListIcon, XIcon } from "@phosphor-icons/react";
+import { BrandLogo } from "@/components/brand-logo";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { BrandLogo } from "@/components/brand-logo";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 const navigation = [
   { label: "Home", href: "/", match: (path: string) => path === "/" },
@@ -38,7 +37,19 @@ const navigation = [
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const router = useRouter();
+  useEffect(() => { const expired = () => router.replace("/login/"); window.addEventListener("session-expired", expired); return () => window.removeEventListener("session-expired", expired); }, [router]);
+  const signedIn = useSyncExternalStore(callback => {
+    window.addEventListener("auth-change", callback); window.addEventListener("storage", callback);
+    return () => { window.removeEventListener("auth-change", callback); window.removeEventListener("storage", callback); };
+  }, () => Boolean(localStorage.getItem("admin_token")), () => false);
+  const hash = useSyncExternalStore(callback => { window.addEventListener("hashchange", callback); return () => window.removeEventListener("hashchange", callback); }, () => window.location.hash, () => "");
+  const items = navigation.map(item => item.label === "Login" && signedIn ? { label: "Dashboard", href: "/admin/dashboard", match: (path: string) => path.startsWith("/admin") } : item);
   const [open, setOpen] = useState(false);
+  useEffect(() => {
+    const escape = (event: KeyboardEvent) => { if (event.key === "Escape") setOpen(false); };
+    window.addEventListener("keydown", escape); return () => window.removeEventListener("keydown", escape);
+  }, []);
   const reduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -71,22 +82,20 @@ export function SiteHeader() {
 
           <nav aria-label="Primary navigation" className="hidden md:block">
             <ul className="flex items-center gap-7">
-              {navigation.map((item) => {
-                const active = item.match(pathname);
+              {items.map((item) => {
+                const active = item.label === "Leaderboard" ? pathname === "/" && hash === "#leaderboard" : item.label === "Home" ? pathname === "/" && hash !== "#leaderboard" : item.match(pathname);
                 return (
                   <li key={item.label}>
                     <Link
                       href={item.href}
                       aria-current={active ? "page" : undefined}
-                      className={`relative block py-2 text-[15px] font-medium transition-colors duration-150 hover:text-brand ${
-                        active ? "text-brand" : "text-muted"
-                      }`}
+                      className={`relative block py-2 text-[15px] font-medium transition-colors duration-150 hover:text-brand ${active ? "text-brand" : "text-muted"
+                        }`}
                     >
                       {item.label}
                       <span
-                        className={`absolute inset-x-0 -bottom-0.5 h-0.5 origin-left bg-accent transition-transform duration-200 ease-brand ${
-                          active ? "scale-x-100" : "scale-x-0"
-                        }`}
+                        className={`absolute inset-x-0 -bottom-0.5 h-0.5 origin-left bg-accent transition-transform duration-200 ease-brand ${active ? "scale-x-100" : "scale-x-0"
+                          }`}
                       />
                     </Link>
                   </li>
@@ -136,12 +145,12 @@ export function SiteHeader() {
             className="fixed inset-x-0 bottom-0 top-[var(--header-height)] z-30 bg-background px-5 py-8 md:hidden"
           >
             <ul className="mx-auto flex max-w-md flex-col">
-              {navigation.map((item, index) => {
-                const active = item.match(pathname);
+              {items.map((item, index) => {
+                const active = item.label === "Leaderboard" ? pathname === "/" && hash === "#leaderboard" : item.label === "Home" ? pathname === "/" && hash !== "#leaderboard" : item.match(pathname);
                 return (
                   <motion.li
                     key={item.label}
-                    initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+                    initial={false}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
                       delay: reduceMotion ? 0 : index * 0.04,
@@ -154,9 +163,8 @@ export function SiteHeader() {
                       href={item.href}
                       aria-current={active ? "page" : undefined}
                       onClick={() => setOpen(false)}
-                      className={`flex min-h-16 items-center text-xl font-semibold ${
-                        active ? "text-brand" : "text-ink"
-                      }`}
+                      className={`flex min-h-16 items-center text-xl font-semibold ${active ? "text-brand" : "text-ink"
+                        }`}
                     >
                       {item.label}
                     </Link>

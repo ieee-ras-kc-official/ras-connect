@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { PencilSimple } from "@phosphor-icons/react";
 import { useToast } from "@/components/toast";
 import { API_BASE_URL } from "@/config/api";
+import { PencilSimple } from "@phosphor-icons/react";
+import { useEffect, useState } from "react";
 
 type ClusterDetails = {
   number: number;
@@ -93,7 +93,7 @@ function ClusterCard({
         setEditing(false);
         toast.success(`Cluster ${cluster.number} updated.`);
       } else {
-        toast.error(data.error || "Failed to update cluster.");
+        toast.error(data.message || data.error || "Failed to update cluster.");
       }
     } catch {
       toast.error("Network error updating cluster.");
@@ -240,7 +240,7 @@ export function ClusterManagerPanel({
 
   const moveChapter = async (chapter: ClusterChapter, value: string) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/chapters/${chapter.slug}`, {
+      const res = await fetch(`${API_BASE_URL}/api/chapters/${encodeURIComponent(chapter.slug)}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -253,7 +253,7 @@ export function ClusterManagerPanel({
         await onChaptersChanged();
         toast.success(value ? `${chapter.name} moved to Cluster ${value}.` : `${chapter.name} removed from its cluster.`);
       } else {
-        toast.error(data.error || "Failed to move college.");
+        toast.error(data.message || data.error || "Failed to move college.");
       }
     } catch {
       toast.error("Network error moving college.");

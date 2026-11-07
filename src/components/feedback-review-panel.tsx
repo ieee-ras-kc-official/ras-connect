@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useToast } from "@/components/toast";
-import { API_BASE_URL } from "@/config/api";
-import { attachmentUrl, STATUS_BADGE, type Feedback, type FeedbackStatus } from "@/utils/feedback";
+import { API_BASE_URL, readJson } from "@/config/api";
+import { STATUS_BADGE, type Feedback, type FeedbackStatus } from "@/utils/feedback";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+
+import { EvidenceLink } from "@/components/evidence-link";
 
 type ReviewChapter = {
   _id: string;
@@ -55,14 +57,14 @@ function ReviewCard({
             : { action, reviewNote }
         ),
       });
-      const data = await res.json();
+      const data = await readJson<{ success: boolean; feedback: Feedback; message?: string; error?: string }>(res);
       if (res.ok && data.success) {
         toast.success(
           action === "verify" ? `Verified: ${data.feedback.points.total} points awarded.` : "Feedback rejected."
         );
         onReviewed(data.feedback);
       } else {
-        toast.error(data.error || "Failed to review feedback.");
+        toast.error(data.message || data.error || "Failed to review feedback.");
       }
     } catch {
       toast.error("Network error reviewing feedback.");
@@ -106,26 +108,10 @@ function ReviewCard({
         <span className={labelClass}>Screenshots / Photos</span>
         <div className="flex flex-wrap gap-2">
           {feedback.photos.map((photo) => (
-            <a
-              key={photo.url}
-              href={attachmentUrl(photo.url)}
-              target="_blank"
-              rel="noopener noreferrer"
-              title={photo.name}
-              className="block size-20 overflow-hidden border border-line bg-surface-soft"
-            >
-              <img src={attachmentUrl(photo.url)} alt={photo.name} className="h-full w-full object-cover" />
-            </a>
+            <EvidenceLink key={photo.url} attachment={photo} />
           ))}
         </div>
-        <a
-          href={attachmentUrl(feedback.attendance.url)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-3 inline-block font-mono text-xs font-bold uppercase text-brand hover:underline"
-        >
-          Open attendance sheet ({feedback.attendance.name})
-        </a>
+        <EvidenceLink attachment={feedback.attendance} />
       </div>
 
       <div className="space-y-3 border-t border-line pt-3">
@@ -250,9 +236,8 @@ export function FeedbackReviewPanel({ chapters }: { chapters: ReviewChapter[] })
             type="button"
             onClick={() => setFilter(status)}
             aria-pressed={filter === status}
-            className={`border px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider transition-colors ${
-              filter === status ? "border-ink bg-ink text-white" : "border-line text-muted hover:text-ink"
-            }`}
+            className={`border px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider transition-colors ${filter === status ? "border-ink bg-ink text-white" : "border-line text-muted hover:text-ink"
+              }`}
           >
             {status} ({(items ?? []).filter((item) => item.status === status).length})
           </button>

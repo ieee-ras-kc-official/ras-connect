@@ -1,92 +1,26 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { ArrowRightIcon } from "@phosphor-icons/react";
 import { ChapterExplorer } from "@/components/chapter-explorer";
-import { HomeHero } from "@/components/home-hero";
-import { Reveal } from "@/components/reveal";
 import { EventCard } from "@/components/event-card";
+import { HomeHero } from "@/components/home-hero";
 import { LeaderboardSection } from "@/components/leaderboard-section";
-import { API_BASE_URL } from "@/config/api";
+import { Reveal } from "@/components/reveal";
+import { apiList } from "@/config/api";
+import type { Chapter, RasEvent } from "@/types/api";
 import { isEventPassed } from "@/utils/date";
+import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr";
+import Link from "next/link";
 
-function Preloader() {
-  return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background select-none">
-      <div className="flex flex-col items-center text-center">
-        {/* Slashed design logo in preloader */}
-        <h1 className="text-4xl sm:text-5xl font-black uppercase tracking-[-0.04em] text-ink select-none animate-pulse flex flex-col items-center">
-          <span className="flex items-center">
-            RAS<span className="text-brand font-mono font-light mx-1">/</span>
-          </span>
-          <span className="text-brand-deep">CONNECT<span className="text-accent font-sans">.</span></span>
-        </h1>
-        {/* Subtitle / Loader bar */}
-        <div className="mt-8 flex flex-col items-center gap-2">
-          <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted">
-            SYNCING WITH NETWORK
-          </span>
-          <div className="h-[2px] w-24 bg-line overflow-hidden relative">
-            <div className="absolute top-0 bottom-0 left-0 bg-brand w-1/2 animate-[loading_1.5s_infinite_ease-in-out]" />
-          </div>
-        </div>
-      </div>
-      {/* Dynamic inline styles for the preloader slider animation */}
-      <style dangerouslySetInnerHTML={{__html: `
-        @keyframes loading {
-          0% { left: -50%; }
-          100% { left: 100%; }
-        }
-      `}} />
-    </div>
-  );
-}
 
-export default function HomePage() {
-  const [chapters, setChapters] = useState<any[]>([]);
-  const [latestEvents, setLatestEvents] = useState<any[]>([]);
-  const [heroEvents, setHeroEvents] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function initData() {
-      try {
-        const [chaptersRes, eventsRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/chapters`),
-          fetch(`${API_BASE_URL}/api/events`)
-        ]);
-
-        if (chaptersRes.ok && eventsRes.ok) {
-          const chaptersData = await chaptersRes.json();
-          const eventsData = await eventsRes.json();
-
-          const activeEvents = eventsData.filter((event: { archived?: boolean }) => !event.archived);
-
-          setChapters(chaptersData);
-          setLatestEvents(activeEvents.slice(0, 8));
-          const featured = activeEvents.filter((e: { isFeatured?: boolean; featured?: boolean }) => e.isFeatured || e.featured);
-          setHeroEvents(featured.length > 0 ? featured.slice(0, 5) : activeEvents.slice(0, 5));
-        }
-      } catch {
-        console.error("Failed to load initial data");
-      } finally {
-        // Small timeout for smooth preloader exit transition
-        setTimeout(() => setLoading(false), 800);
-      }
-    }
-    initData();
-  }, []);
-
-  if (loading) {
-    return <Preloader />;
-  }
-
+export const metadata = { alternates: { canonical: "/" } };
+export default async function HomePage() {
+  const [chapters, events] = await Promise.all([apiList<Chapter>("/api/chapters", { cache: "no-store" }), apiList<RasEvent>("/api/events", { cache: "no-store" })]);
+  const activeEvents = events.filter(event => !isEventPassed(event.date));
+  const latestEvents = activeEvents.slice(0, 8);
+  const heroEvents = activeEvents.filter(event => event.featured).slice(0, 5);
   const featuredChapters = chapters.slice(0, 5);
 
   return (
     <>
-      <HomeHero events={heroEvents} chaptersCount={chapters.length} eventsCount={latestEvents.length} />
+      <HomeHero events={heroEvents} chaptersCount={chapters.length} eventsCount={activeEvents.length} />
 
       {/* About RAS Connect Section */}
       <section className="section-space bg-background border-b border-line" aria-labelledby="about-heading">
@@ -103,7 +37,7 @@ export default function HomePage() {
                 </div>
                 <h2
                   id="about-heading"
-                  className="mt-4 text-4xl font-black uppercase leading-[0.9] tracking-[-0.04em] text-ink sm:text-5xl lg:text-6xl flex flex-col select-none"
+                  className="mt-4 text-4xl font-black uppercase leading-[0.9] tracking-[-0.04em] text-ink sm:text-5xl lg:text-6xl flex flex-col"
                 >
                   <span className="flex items-center">
                     RAS<span className="text-brand font-mono font-light mx-1">/</span>
@@ -139,7 +73,7 @@ export default function HomePage() {
               >
                 Explore All Events
               </h2>
-              <div className="flex items-center gap-1.5 font-mono text-[10px] sm:text-xs uppercase tracking-wider text-brand/85 border border-line bg-background/40 px-2.5 py-1 select-none shrink-0 mt-1 sm:mt-2">
+              <div className="flex items-center gap-1.5 font-mono text-[10px] sm:text-xs uppercase tracking-wider text-brand/85 border border-line bg-background/40 px-2.5 py-1 shrink-0 mt-1 sm:mt-2">
                 <span>Scroll</span>
                 <span className="font-bold text-accent">↔</span>
               </div>
@@ -148,24 +82,15 @@ export default function HomePage() {
               Browse workshops, hackathons, and exhibitions organized by the student communities.
             </p>
           </Reveal>
-          
+
           <div className="relative mt-12">
             {/* Local style block to hide scrollbars cleanly */}
-            <style dangerouslySetInnerHTML={{__html: `
-              .no-scrollbar::-webkit-scrollbar {
-                display: none;
-              }
-              .no-scrollbar {
-                -ms-overflow-style: none;
-                scrollbar-width: none;
-              }
-            `}} />
 
             {latestEvents.length > 0 ? (
               <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-6 no-scrollbar">
-                {latestEvents.map((event: any, index: number) => (
-                  <div 
-                    key={event.slug} 
+                {latestEvents.map((event, index) => (
+                  <div
+                    key={event.slug}
                     className="shrink-0 w-[280px] sm:w-[320px] md:w-[calc((100%-24px*3)/4)] snap-start h-full"
                   >
                     <EventCard event={event} index={index} />
@@ -209,7 +134,7 @@ export default function HomePage() {
               >
                 Explore Student Branch Chapters
               </h2>
-              <div className="flex items-center gap-1.5 font-mono text-[10px] sm:text-xs uppercase tracking-wider text-brand/85 border border-line bg-background/40 px-2.5 py-1 select-none shrink-0 mt-1 sm:mt-2">
+              <div className="flex items-center gap-1.5 font-mono text-[10px] sm:text-xs uppercase tracking-wider text-brand/85 border border-line bg-background/40 px-2.5 py-1 shrink-0 mt-1 sm:mt-2">
                 <span>Scroll</span>
                 <span className="font-bold text-accent">↔</span>
               </div>

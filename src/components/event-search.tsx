@@ -1,43 +1,42 @@
 "use client";
 
+import { EventCard } from "@/components/event-card";
+import type { Chapter, RasEvent } from "@/types/api";
 import {
   MagnifyingGlassIcon,
   XIcon,
 } from "@phosphor-icons/react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence } from "motion/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDeferredValue, useMemo, useTransition } from "react";
-import { EventCard } from "@/components/event-card";
-import type { RasEvent, Chapter } from "@/data/mock-data";
 
-export function EventSearch({ events, chapters }: { events: any[]; chapters: any[] }) {
+export function EventSearch({ events, chapters }: { events: RasEvent[]; chapters: Chapter[] }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const reduceMotion = useReducedMotion();
-  
+
   const query = searchParams.get("q") ?? "";
   const selectedChapter = searchParams.get("chapter") ?? "";
   const deferredQuery = useDeferredValue(query);
 
   const filteredEvents = useMemo(() => {
     let result = events;
-    
+
     if (selectedChapter) {
       result = result.filter(e => e.chapterSlug === selectedChapter);
     }
-    
+
     const normalized = deferredQuery.trim().toLocaleLowerCase();
     if (normalized) {
       result = result.filter((event) => {
         const descStr = Array.isArray(event.description)
           ? event.description.join(" ")
           : typeof event.description === "string"
-          ? event.description
-          : "";
+            ? event.description
+            : "";
         return [event.name, event.location, descStr].some((value) =>
-          value ? value.toLocaleLowerCase().includes(normalized) : false,
+          value ? (value ?? "").toLocaleLowerCase().includes(normalized) : false,
         );
       });
     }

@@ -1,8 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback } from "react";
+import { CheckCircle, Info, X, XCircle } from "@phosphor-icons/react";
 import { AnimatePresence, motion } from "motion/react";
-import { CheckCircle, XCircle, Info, X } from "@phosphor-icons/react";
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 
 type ToastType = "success" | "error" | "info";
 
@@ -23,20 +23,24 @@ interface ToastContextType {
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
+  const timers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
+  useEffect(() => { const active = timers.current; return () => { active.forEach(clearTimeout); active.clear(); }; }, []);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const removeToast = useCallback((id: string) => {
+    clearTimeout(timers.current.get(id));
+    timers.current.delete(id);
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
   const addToast = useCallback((message: string, type: ToastType) => {
-    const id = Math.random().toString(36).substring(2, 9);
+    const id = crypto.randomUUID();
     setToasts((prev) => [...prev, { id, message, type }]);
-    
+
     // Auto-remove after 4 seconds
-    setTimeout(() => {
+    timers.current.set(id, setTimeout(() => {
       removeToast(id);
-    }, 4000);
+    }, 4000));
   }, [removeToast]);
 
   const toast = React.useMemo(() => ({
@@ -48,9 +52,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={{ toast }}>
       {children}
-      
+
       {/* Toast Container */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 w-full max-w-[calc(100%-48px)] sm:max-w-sm pointer-events-none">
+      <div aria-live="polite" aria-relevant="additions" className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 w-full max-w-[calc(100%-48px)] sm:max-w-sm pointer-events-none">
         <AnimatePresence>
           {toasts.map((t) => (
             <motion.div

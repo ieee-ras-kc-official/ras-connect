@@ -1,55 +1,24 @@
 "use client";
-
-import { useEffect, useState } from "react";
 import { EventSearch } from "@/components/event-search";
-import { API_BASE_URL } from "@/config/api";
-
-function SearchFallback() {
-  return (
-    <div className="mt-12 animate-pulse">
-      <div className="h-5 w-48 bg-surface-strong" />
-      <div className="mt-2 h-13 max-w-2xl bg-surface-strong" />
-      <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: 6 }).map((_, index) => (
-          <div key={index} className="h-64 bg-surface-strong" />
-        ))}
-      </div>
-    </div>
-  );
-}
-
+import { apiList } from "@/config/api";
+import type { Chapter, RasEvent } from "@/types/api";
 import { isEventPassed } from "@/utils/date";
-
+import { useEffect, useState } from "react";
 export function EventsPageClient() {
-  const [chapters, setChapters] = useState<any[]>([]);
-  const [events, setEvents] = useState<any[]>([]);
+  const [chapters, setChapters] = useState<Chapter[]>([]);
+  const [events, setEvents] = useState<RasEvent[]>([]);
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
-    async function loadData() {
-      try {
-        const [chaptersRes, eventsRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/chapters`),
-          fetch(`${API_BASE_URL}/api/events`)
-        ]);
-        if (chaptersRes.ok && eventsRes.ok) {
-          setChapters(await chaptersRes.json());
-          setEvents(await eventsRes.json());
-        }
-      } catch (err) {
-        console.error("Failed to load live data:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadData();
-  }, []);
-
-  if (loading) {
-    return <SearchFallback />;
-  }
-
-  const activeEvents = events.filter((event: any) => !event.archived);
-
-  return <EventSearch events={activeEvents} chapters={chapters} />;
+    let cancelled = false;
+    Promise.all([apiList<Chapter>("/api/chapters"), apiList<RasEvent>("/api/events")])
+      .then(([chapters, events]) => { if (!cancelled) { setChapters(chapters); setEvents(events); setError(""); } })
+      .catch(() => { if (!cancelled) setError("Unable to load events. Please try again."); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [attempt]);
+  if (loading) return <p role="status" className="py-12">Loading events…</p>;
+  if (error) return <div role="alert" className="py-12"><p>{error}</p><button onClick={() => setAttempt(value => value + 1)}>Retry</button></div>;
+  return <EventSearch events={events.filter(event => !isEventPassed(event.date))} chapters={chapters} />;
 }

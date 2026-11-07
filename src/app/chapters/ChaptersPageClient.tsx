@@ -1,46 +1,24 @@
 "use client";
-
-import { useEffect, useState } from "react";
 import { ChapterSearch } from "@/components/chapter-search";
-import { API_BASE_URL } from "@/config/api";
-
-function SearchFallback() {
-  return (
-    <div className="mt-12 animate-pulse">
-      <div className="h-5 w-48 rounded bg-surface-strong" />
-      <div className="mt-2 h-13 max-w-2xl rounded-[10px] bg-surface-strong" />
-      <div className="mt-12 grid gap-8 md:grid-cols-2">
-        {Array.from({ length: 4 }).map((_, index) => (
-          <div key={index} className="h-36 rounded-[14px] bg-surface-strong" />
-        ))}
-      </div>
-    </div>
-  );
-}
+import { apiList } from "@/config/api";
+import type { Chapter } from "@/types/api";
+import { useEffect, useState } from "react";
 
 export function ChaptersPageClient() {
-  const [chapters, setChapters] = useState<any[]>([]);
+  const [chapters, setChapters] = useState<Chapter[]>([]);
+
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
-    async function loadData() {
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/chapters`);
-        if (res.ok) {
-          setChapters(await res.json());
-        }
-      } catch (err) {
-        console.error("Failed to load chapters live:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadData();
-  }, []);
-
-  if (loading) {
-    return <SearchFallback />;
-  }
-
+    let cancelled = false;
+    Promise.all([apiList<Chapter>("/api/chapters")])
+      .then(([chapters]) => { if (!cancelled) { setChapters(chapters); setError(""); } })
+      .catch(() => { if (!cancelled) setError("Unable to load chapters. Please try again."); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [attempt]);
+  if (loading) return <p role="status" className="py-12">Loading chapters…</p>;
+  if (error) return <div role="alert" className="py-12"><p>{error}</p><button onClick={() => setAttempt(value => value + 1)}>Retry</button></div>;
   return <ChapterSearch chapters={chapters} />;
 }

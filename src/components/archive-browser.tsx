@@ -1,5 +1,7 @@
 "use client";
 
+import { EventCard } from "@/components/event-card";
+import type { Chapter, RasEvent } from "@/types/api";
 import {
   CaretLeftIcon,
   CaretRightIcon,
@@ -9,8 +11,6 @@ import {
 import { motion } from "motion/react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { EventCard } from "@/components/event-card";
-import type { Chapter, RasEvent } from "@/data/mock-data";
 
 const PAGE_SIZE = 4;
 
@@ -19,14 +19,8 @@ type ArchiveBrowserProps = {
   chapters: Chapter[];
 };
 
-function getEventYear(event: any): number {
-  if (typeof event?.date?.year === "number") return event.date.year;
-  const dateStr = typeof event?.date === "string" ? event.date : (event?.date?.label || "");
-  const parsed = Date.parse(dateStr);
-  if (!isNaN(parsed)) return new Date(parsed).getFullYear();
-  const match = dateStr.match(/\b(20\d{2})\b/);
-  if (match) return parseInt(match[1], 10);
-  return new Date().getFullYear();
+function getEventYear(event: RasEvent): number {
+  return /^\d{4}-/.test(event.date) ? Number(event.date.slice(0, 4)) : 0;
 }
 
 function formatChapterShortName(name: string): string {
@@ -100,7 +94,7 @@ export function ArchiveBrowser({ events, chapters }: ArchiveBrowserProps) {
         new Set(
           events
             .map((event) => getEventYear(event))
-            .filter((year): year is number => typeof year === "number"),
+            .filter((year): year is number => Number.isInteger(year) && year > 0),
         ),
       ).sort((a, b) => b - a),
     [events],
@@ -112,7 +106,7 @@ export function ArchiveBrowser({ events, chapters }: ArchiveBrowserProps) {
         new Set(
           chapterFilteredEvents
             .map((event) => getEventYear(event))
-            .filter((year): year is number => typeof year === "number"),
+            .filter((year): year is number => Number.isInteger(year) && year > 0),
         ),
       ).sort((a, b) => b - a),
     [chapterFilteredEvents],
@@ -150,7 +144,7 @@ export function ArchiveBrowser({ events, chapters }: ArchiveBrowserProps) {
   useEffect(() => {
     if (chapterSlug && scrollContainerRef.current) {
       const activeBtn = scrollContainerRef.current.querySelector(
-        `[data-chapter="${chapterSlug}"]`
+        `[data-chapter="${CSS.escape(chapterSlug)}"]`
       ) as HTMLElement | null;
       if (activeBtn) {
         activeBtn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
@@ -175,7 +169,7 @@ export function ArchiveBrowser({ events, chapters }: ArchiveBrowserProps) {
           value?.toLocaleLowerCase().includes(normalized),
         );
       })
-      .sort((a, b) => (b.date?.iso ?? "").localeCompare(a.date?.iso ?? ""));
+      .sort((a, b) => b.date.localeCompare(a.date));
   }, [chapterFilteredEvents, chapters, query, year]);
 
   const visible = filtered.slice(0, page * PAGE_SIZE);
@@ -282,11 +276,10 @@ export function ArchiveBrowser({ events, chapters }: ArchiveBrowserProps) {
             onClick={() => handleScroll("left")}
             disabled={!canScrollLeft}
             aria-label="Scroll left"
-            className={`shrink-0 mr-2 grid size-8 place-items-center border border-line bg-background text-ink transition-opacity rounded-none select-none ${
-              canScrollLeft
+            className={`shrink-0 mr-2 grid size-8 place-items-center border border-line bg-background text-ink transition-opacity rounded-none ${canScrollLeft
                 ? "opacity-100 hover:bg-surface-soft hover:text-brand cursor-pointer"
                 : "opacity-25 cursor-not-allowed"
-            }`}
+              }`}
           >
             <CaretLeftIcon size={14} aria-hidden="true" />
           </button>
@@ -300,11 +293,10 @@ export function ArchiveBrowser({ events, chapters }: ArchiveBrowserProps) {
               type="button"
               data-chapter="all"
               onClick={() => replaceParams({ chapter: "all", page: null })}
-              className={`shrink-0 px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-wider transition-all select-none border rounded-none ${
-                chapterSlug === "all"
+              className={`shrink-0 px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-wider transition-all border rounded-none ${chapterSlug === "all"
                   ? "bg-brand text-white border-brand font-bold shadow-sm"
                   : "bg-background border-line text-muted hover:text-ink hover:border-muted font-medium"
-              }`}
+                }`}
             >
               All Chapters
             </button>
@@ -318,11 +310,10 @@ export function ArchiveBrowser({ events, chapters }: ArchiveBrowserProps) {
                   type="button"
                   title={`${chapter.name} (${chapter.college || ""})`}
                   onClick={() => replaceParams({ chapter: chapter.slug, page: null })}
-                  className={`shrink-0 px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider transition-all select-none border rounded-none ${
-                    isSelected
+                  className={`shrink-0 px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider transition-all border rounded-none ${isSelected
                       ? "bg-brand text-white border-brand font-bold shadow-sm"
                       : "bg-background border-line text-muted hover:text-ink hover:border-muted font-medium"
-                  }`}
+                    }`}
                 >
                   {shortName}
                 </button>
@@ -336,11 +327,10 @@ export function ArchiveBrowser({ events, chapters }: ArchiveBrowserProps) {
             onClick={() => handleScroll("right")}
             disabled={!canScrollRight}
             aria-label="Scroll right"
-            className={`shrink-0 ml-2 grid size-8 place-items-center border border-line bg-background text-ink transition-opacity rounded-none select-none ${
-              canScrollRight
+            className={`shrink-0 ml-2 grid size-8 place-items-center border border-line bg-background text-ink transition-opacity rounded-none ${canScrollRight
                 ? "opacity-100 hover:bg-surface-soft hover:text-brand cursor-pointer"
                 : "opacity-25 cursor-not-allowed"
-            }`}
+              }`}
           >
             <CaretRightIcon size={14} aria-hidden="true" />
           </button>

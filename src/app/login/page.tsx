@@ -1,11 +1,10 @@
 "use client";
 
+import { API_BASE_URL, readJson } from "@/config/api";
 import { EyeIcon, EyeSlashIcon } from "@phosphor-icons/react";
 import { motion } from "motion/react";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-
-import { API_BASE_URL } from "@/config/api";
+import { useEffect, useState } from "react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -15,6 +14,12 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("admin_token");
+    if (!token) return;
+    fetch(`${API_BASE_URL}/api/admin/verify`, { headers: { Authorization: `Bearer ${token}` } }).then(res => { if (res.ok) router.replace("/admin/dashboard"); else localStorage.removeItem("admin_token"); }).catch(() => { });
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,19 +40,18 @@ export default function LoginPage() {
         body: JSON.stringify({ username, password }),
       });
 
-      const data = await response.json();
+      const data = await readJson<{ success: boolean; token: string; message?: string }>(response);
 
       if (response.ok && data.success) {
         localStorage.setItem("admin_token", data.token);
         setSuccess(true);
-        setTimeout(() => {
-          router.push("/admin/dashboard");
-        }, 1000);
+        window.dispatchEvent(new Event("auth-change"));
+        router.replace("/admin/dashboard");
       } else {
         setError(data.message || "Invalid username or password.");
       }
     } catch (err) {
-      setError("Failed to connect to authentication server.");
+      setError(err instanceof Error ? err.message : "Failed to connect to authentication server.");
     } finally {
       setLoading(false);
     }
@@ -110,7 +114,7 @@ export default function LoginPage() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                autoComplete="off"
+                autoComplete="username"
                 placeholder="Enter admin username"
                 className="mt-1 w-full bg-transparent py-2.5 border-b border-line text-base text-ink outline-none focus:outline-none focus:ring-0 focus:border-line focus-visible:outline-none focus-visible:ring-0 focus-visible:border-line active:border-line placeholder:text-muted/60 rounded-none shadow-none focus:shadow-none active:shadow-none focus:bg-transparent active:bg-transparent"
               />
@@ -130,7 +134,7 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="off"
+                  autoComplete="current-password"
                   placeholder="Enter password"
                   className="w-full bg-transparent py-2.5 pr-10 [&::-ms-reveal]:hidden border-b border-line text-base text-ink outline-none focus:outline-none focus:ring-0 focus:border-line focus-visible:outline-none focus-visible:ring-0 focus-visible:border-line active:border-line placeholder:text-muted/60 rounded-none shadow-none focus:shadow-none active:shadow-none focus:bg-transparent active:bg-transparent"
                 />

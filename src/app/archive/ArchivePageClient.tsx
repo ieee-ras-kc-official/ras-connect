@@ -1,63 +1,24 @@
 "use client";
-
-import { useEffect, useState } from "react";
 import { ArchiveBrowser } from "@/components/archive-browser";
-import { API_BASE_URL } from "@/config/api";
-
-function ArchiveFallback() {
-  return (
-    <div className="mt-12 animate-pulse">
-      <div className="h-36 rounded-[14px] bg-surface-strong" />
-      <div className="mt-14 h-10 w-28 rounded bg-surface-strong" />
-      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: 3 }).map((_, index) => (
-          <div key={index}>
-            <div className="aspect-[16/10] rounded-[14px] bg-surface-strong" />
-            <div className="mt-4 h-6 w-3/4 rounded bg-surface-strong" />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
+import { apiList } from "@/config/api";
+import type { Chapter, RasEvent } from "@/types/api";
 import { isEventPassed } from "@/utils/date";
-
+import { useEffect, useState } from "react";
 export function ArchivePageClient() {
-  const [chapters, setChapters] = useState<any[]>([]);
-  const [events, setEvents] = useState<any[]>([]);
+  const [chapters, setChapters] = useState<Chapter[]>([]);
+  const [events, setEvents] = useState<RasEvent[]>([]);
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
-    async function loadData() {
-      try {
-        const [chaptersRes, eventsRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/chapters`),
-          fetch(`${API_BASE_URL}/api/events`)
-        ]);
-        if (chaptersRes.ok && eventsRes.ok) {
-          setChapters(await chaptersRes.json());
-          setEvents(await eventsRes.json());
-        }
-      } catch (err) {
-        console.error("Failed to load archive live:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadData();
-  }, []);
-
-  if (loading) {
-    return <ArchiveFallback />;
-  }
-
-  const archivedEvents = events.filter((event: any) => {
-    const dateStr = typeof event.date === "string" 
-      ? event.date 
-      : event.date?.label || "";
-    return event.archived || isEventPassed(dateStr);
-  });
-
-  return <ArchiveBrowser events={archivedEvents} chapters={chapters} />;
+    let cancelled = false;
+    Promise.all([apiList<Chapter>("/api/chapters"), apiList<RasEvent>("/api/events")])
+      .then(([chapters, events]) => { if (!cancelled) { setChapters(chapters); setEvents(events); setError(""); } })
+      .catch(() => { if (!cancelled) setError("Unable to load archive. Please try again."); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [attempt]);
+  if (loading) return <p role="status" className="py-12">Loading archive…</p>;
+  if (error) return <div role="alert" className="py-12"><p>{error}</p><button onClick={() => setAttempt(value => value + 1)}>Retry</button></div>;
+  return <ArchiveBrowser events={events.filter(event => isEventPassed(event.date))} chapters={chapters} />;
 }

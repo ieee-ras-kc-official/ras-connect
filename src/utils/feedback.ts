@@ -1,4 +1,3 @@
-import { API_BASE_URL } from "@/config/api";
 
 export type FeedbackStatus = "pending" | "verified" | "rejected";
 
@@ -27,9 +26,6 @@ export type Feedback = {
   reviewNote: string;
   submittedBy: string;
 };
-
-export const attachmentUrl = (url: string) =>
-  url.startsWith("/uploads/") ? `${API_BASE_URL}${url}` : url;
 
 export const STATUS_BADGE: Record<FeedbackStatus, string> = {
   pending: "text-amber-700 bg-amber-50 border-amber-300",

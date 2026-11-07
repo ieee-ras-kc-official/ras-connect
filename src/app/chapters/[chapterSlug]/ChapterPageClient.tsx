@@ -1,69 +1,68 @@
 "use client";
+import NotFound from "@/app/not-found";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { ArrowRightIcon } from "@phosphor-icons/react";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { EmptyState } from "@/components/empty-state";
 import { EventCard } from "@/components/event-card";
+import { ImageWithFallback } from "@/components/image-with-fallback";
 import { Reveal } from "@/components/reveal";
-import { API_BASE_URL } from "@/config/api";
+import { API_BASE_URL, ApiError, apiList, readJson } from "@/config/api";
+import { isEventPassed } from "@/utils/date";
+import { ArrowRightIcon } from "@phosphor-icons/react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+
+import type { Chapter, RasEvent } from "@/types/api";
 
 type Props = {
   chapterSlug: string;
+  initialChapter: Chapter;
 };
 
-import { isEventPassed } from "@/utils/date";
-import { ImageWithFallback } from "@/components/image-with-fallback";
 
-export function ChapterPageClient({ chapterSlug }: Props) {
-  const [chapter, setChapter] = useState<any>(null);
-  const [events, setEvents] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+export function ChapterPageClient({ chapterSlug, initialChapter }: Props) {
+  const [chapter, setChapter] = useState<Chapter | null>(initialChapter);
+  const [events, setEvents] = useState<RasEvent[]>([]);
+  const [error, setError] = useState("");
+  const [attempt, setAttempt] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function loadData() {
       try {
-        const [chapterRes, eventsRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/chapters/${chapterSlug}`),
-          fetch(`${API_BASE_URL}/api/events?chapter=${chapterSlug}`)
-        ]);
+        const slug = chapterSlug;
+        const chapterRes = await fetch(`${API_BASE_URL}/api/chapters/${encodeURIComponent(slug)}`);
+        if (chapterRes.status === 404) { setChapter(null); return; }
+        const loadedChapter = await readJson<Chapter>(chapterRes);
+        setChapter(loadedChapter);
+        setError("");
+        try { setEvents(await apiList<RasEvent>(`/api/events?chapter=${encodeURIComponent(slug)}`)); }
+        catch { setError("Chapter loaded, but its events are unavailable. Please retry."); }
 
-        if (chapterRes.ok && eventsRes.ok) {
-          setChapter(await chapterRes.json());
-          setEvents(await eventsRes.json());
-        }
       } catch (err) {
-        console.error("Failed to load chapter dynamic data:", err);
+        setError(err instanceof ApiError ? err.message : "Unable to load the chapter. Please try again.");
       } finally {
         setLoading(false);
       }
     }
     loadData();
-  }, [chapterSlug]);
+  }, [chapterSlug, attempt]);
+
+  if (error && !chapter) return <div role="alert" className="page-container py-12"><p>{error}</p><button onClick={() => setAttempt(n => n + 1)}>Retry</button></div>;
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center select-none animate-pulse">
+      <div className="min-h-[60vh] flex flex-col items-center justify-center animate-pulse">
         <div className="h-8 w-48 bg-surface-strong mb-4" />
         <div className="h-4 w-96 bg-surface-strong" />
       </div>
     );
   }
 
-  if (!chapter) {
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center">
-        <h2 className="text-xl font-bold uppercase text-ink">Chapter not found</h2>
-        <Link href="/chapters" className="mt-4 text-sm font-bold text-brand hover:underline">
-          Back to all chapters
-        </Link>
-      </div>
-    );
-  }
+  if (!chapter) return <NotFound />;
 
-  const currentEvents = events.filter((event: any) => !event.archived);
-  const archivedEvents = events.filter((event: any) => event.archived);
+  const currentEvents = events.filter((event: RasEvent) => !isEventPassed(event.date));
+  const archivedEvents = events.filter((event: RasEvent) => isEventPassed(event.date));
 
   return (
     <>
@@ -85,8 +84,6 @@ export function ChapterPageClient({ chapterSlug }: Props) {
                     src={
                       chapter.logo && chapter.logo !== "/card1.jpeg"
                         ? chapter.logo
-                        : chapter.image && chapter.image !== "/card1.jpeg"
-                        ? chapter.image
                         : "/images/brand/default-chapter-icon.svg"
                     }
                     alt={chapter.name}
@@ -111,6 +108,7 @@ export function ChapterPageClient({ chapterSlug }: Props) {
         </div>
       </section>
 
+      {error && <p role="alert" className="page-container">{error} <button onClick={() => setAttempt(n => n + 1)}>Retry</button></p>}
       <section className="border-t border-line bg-background py-10 md:py-14" aria-labelledby="chapter-events-heading">
         <div className="page-container">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
@@ -126,7 +124,7 @@ export function ChapterPageClient({ chapterSlug }: Props) {
             {archivedEvents.length ? (
               <Reveal>
                 <Link
-                  href={`/archive?chapter=${chapter.slug}`}
+                  href={`/archive?chapter=${encodeURIComponent(chapter.slug)}`}
                   className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-accent transition-colors hover:text-brand rounded-none"
                 >
                   View archived events
@@ -138,7 +136,7 @@ export function ChapterPageClient({ chapterSlug }: Props) {
 
           {currentEvents.length ? (
             <div className="no-scrollbar -mx-4 flex snap-x snap-mandatory overflow-x-auto px-4 pb-4 pt-1 gap-6">
-              {currentEvents.map((event: any, index: number) => (
+              {currentEvents.map((event: RasEvent, index: number) => (
                 <div
                   key={event.slug}
                   className="shrink-0 w-[280px] sm:w-[300px] snap-start"

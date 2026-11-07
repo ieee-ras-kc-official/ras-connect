@@ -1,7 +1,8 @@
 "use client";
+import Image from "next/image";
 
+import { resolveMediaUrl } from "@/config/api";
 import { useState } from "react";
-import { API_BASE_URL } from "@/config/api";
 
 type ImageWithFallbackProps = {
   src: string | null;
@@ -18,21 +19,24 @@ export function ImageWithFallback({
   fallbackSrc = "/card1.jpeg",
   className = "object-cover",
   priority = false,
+  sizes,
 }: ImageWithFallbackProps) {
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
 
   const rawSrc = src && src.trim() !== "" ? src : null;
-  let resolvedSrc = rawSrc;
-
-  if (rawSrc && rawSrc.startsWith("/uploads/")) {
-    resolvedSrc = `${API_BASE_URL}${rawSrc}`;
-  }
+  const resolvedSrc = rawSrc ? resolveMediaUrl(rawSrc) : null;
 
   const failed = Boolean(resolvedSrc && failedSrc === resolvedSrc);
   const finalSrc = !resolvedSrc || failed ? fallbackSrc : resolvedSrc;
 
   return (
-    <img
+    <Image
+      width={640}
+      height={640}
+      sizes={sizes}
+      loading={priority ? "eager" : "lazy"}
+      fetchPriority={priority ? "high" : "auto"}
+      decoding="async"
       src={finalSrc}
       alt={alt}
       className={`w-full h-full ${className}`}

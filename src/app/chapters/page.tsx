@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ChaptersPageClient } from "./ChaptersPageClient";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/chapters/" },
   title: "IEEE RAS Student Branch Chapters",
   description:
     "Discover the engineering colleges, student branch chapters, and active community hubs driving robotics innovation across Kerala on RAS Connect.",

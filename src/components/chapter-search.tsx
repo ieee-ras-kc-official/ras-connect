@@ -1,7 +1,8 @@
 "use client";
 
+import { ImageWithFallback } from "@/components/image-with-fallback";
+import type { Chapter } from "@/types/api";
 import {
-  ArrowRightIcon,
   MagnifyingGlassIcon,
   XIcon,
 } from "@phosphor-icons/react";
@@ -9,8 +10,6 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDeferredValue, useMemo, useTransition } from "react";
-import { ImageWithFallback } from "@/components/image-with-fallback";
-import type { Chapter } from "@/data/mock-data";
 
 export function ChapterSearch({ chapters }: { chapters: Chapter[] }) {
   const searchParams = useSearchParams();
@@ -26,7 +25,7 @@ export function ChapterSearch({ chapters }: { chapters: Chapter[] }) {
     if (!normalized) return chapters;
     return chapters.filter((chapter) =>
       [chapter.name, chapter.college, chapter.location].some((value) =>
-        value.toLocaleLowerCase().includes(normalized),
+        (value ?? "").toLocaleLowerCase().includes(normalized),
       ),
     );
   }, [chapters, deferredQuery]);
@@ -88,13 +87,13 @@ export function ChapterSearch({ chapters }: { chapters: Chapter[] }) {
           ) : null}
         </div>
       </div>
- 
+
       <p aria-live="polite" className="mt-5 font-mono text-xs text-muted">
         {isPending
           ? "Updating results"
           : `${results.length} ${results.length === 1 ? "chapter" : "chapters"}`}
       </p>
- 
+
       {results.length ? (
         <motion.div layout className="mt-8 grid gap-x-10 md:grid-cols-2">
           <AnimatePresence mode="popLayout" initial={false}>
@@ -102,7 +101,7 @@ export function ChapterSearch({ chapters }: { chapters: Chapter[] }) {
               <motion.div
                 layout
                 key={chapter.slug}
-                initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+                initial={false}
                 animate={{ opacity: 1, y: 0 }}
                 exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
                 transition={{
@@ -113,16 +112,14 @@ export function ChapterSearch({ chapters }: { chapters: Chapter[] }) {
                 className="border-b border-line"
               >
                 <Link
-                  href={`/chapters/${chapter.slug}`}
+                  href={`/chapters/${encodeURIComponent(chapter.slug)}`}
                   className="group grid grid-cols-[72px_1fr] items-center gap-4 py-4"
                 >
                   <span className="relative block aspect-square w-[72px] overflow-hidden bg-surface-soft border border-line rounded-none">
                     <ImageWithFallback
                       src={
-                        (chapter as any).logo && (chapter as any).logo !== "/card1.jpeg"
-                          ? (chapter as any).logo
-                          : chapter.image && chapter.image !== "/card1.jpeg"
-                          ? chapter.image
+                        chapter.logo && chapter.logo !== "/card1.jpeg"
+                          ? chapter.logo
                           : "/images/brand/default-chapter-icon.svg"
                       }
                       alt={chapter.name}

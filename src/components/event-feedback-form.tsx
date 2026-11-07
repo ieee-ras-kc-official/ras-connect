@@ -1,16 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Paperclip, X } from "@phosphor-icons/react";
 import { useToast } from "@/components/toast";
-import { API_BASE_URL } from "@/config/api";
+import { API_BASE_URL, readJson } from "@/config/api";
 import {
-  attachmentUrl,
   STATUS_BADGE,
   type Attachment,
   type CollaboratingChapter,
   type Feedback,
 } from "@/utils/feedback";
+import { Paperclip, X } from "@phosphor-icons/react";
+import { useEffect, useRef, useState } from "react";
+
+import { EvidenceLink } from "@/components/evidence-link";
 
 type FormContext = {
   eventName: string;
@@ -36,7 +37,7 @@ const SCOREBOARD = [
   },
   {
     title: "Participant Count",
-    lines: ["40–60 participants - 5 points", "61–80 participants - 6 points"],
+    lines: ["Fewer than 40 participants - 0 points", "40–60 participants - 5 points", "61 or more participants - 6 points"],
   },
   {
     title: "IEEE RAS Member Participation",
@@ -55,14 +56,7 @@ const headingClass = "text-sm font-bold uppercase tracking-tight text-ink border
 function AttachmentChip({ attachment, onRemove }: { attachment: Attachment; onRemove: () => void }) {
   return (
     <li className="flex items-center justify-between gap-3 border border-line bg-surface-soft px-3 py-2 text-xs">
-      <a
-        href={attachmentUrl(attachment.url)}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="min-w-0 truncate font-mono text-brand hover:underline"
-      >
-        {attachment.name || "Attachment"}
-      </a>
+      <EvidenceLink attachment={attachment} />
       <button
         type="button"
         onClick={onRemove}
@@ -157,7 +151,7 @@ export function EventFeedbackForm({ eventSlug }: { eventSlug: string }) {
     const token = localStorage.getItem("admin_token");
     if (!token) return;
 
-    fetch(`${API_BASE_URL}/api/feedback/event/${eventSlug}`, {
+    fetch(`${API_BASE_URL}/api/feedback/event/${encodeURIComponent(eventSlug)}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => (res.ok ? res.json() : null))
@@ -200,7 +194,7 @@ export function EventFeedbackForm({ eventSlug }: { eventSlug: string }) {
       });
       const signed = await signRes.json();
       if (!signRes.ok) {
-        toast.error(signed.error || `Failed to upload ${file.name}.`);
+        toast.error(signed.message || signed.error || `Failed to upload ${file.name}.`);
         return null;
       }
 
@@ -211,12 +205,16 @@ export function EventFeedbackForm({ eventSlug }: { eventSlug: string }) {
         formData.append("api_key", signed.apiKey);
         formData.append("signature", signed.signature);
         formData.append("file", file);
-        const res = await fetch(`https://api.cloudinary.com/v1_1/${signed.cloudName}/auto/upload`, {
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${signed.cloudName}/${signed.resourceType}/upload`, {
           method: "POST",
           body: formData,
         });
         const data = await res.json();
-        if (res.ok) return { url: data.secure_url as string, name: file.name };
+        if (res.ok) {
+          const confirmed = await fetch(`${API_BASE_URL}/api/feedback/uploads/${encodeURIComponent(signed.receiptId)}/confirm`, { method: "POST", headers: auth });
+          const result = await readJson<{ attachment: Attachment }>(confirmed);
+          return result.attachment;
+        }
         toast.error(data.error?.message || `Failed to upload ${file.name}.`);
         return null;
       }
@@ -230,7 +228,7 @@ export function EventFeedbackForm({ eventSlug }: { eventSlug: string }) {
       });
       const data = await res.json();
       if (res.ok && data.success) return data.attachment as Attachment;
-      toast.error(data.error || `Failed to upload ${file.name}.`);
+      toast.error(data.message || data.error || `Failed to upload ${file.name}.`);
     } catch {
       toast.error(`Network error uploading ${file.name}.`);
     }
@@ -266,7 +264,7 @@ export function EventFeedbackForm({ eventSlug }: { eventSlug: string }) {
     }
     setSubmitting(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/feedback/event/${eventSlug}`, {
+      const res = await fetch(`${API_BASE_URL}/api/feedback/event/${encodeURIComponent(eventSlug)}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -286,7 +284,7 @@ export function EventFeedbackForm({ eventSlug }: { eventSlug: string }) {
         setContext({ ...context, feedback: data.feedback });
         toast.success("Feedback sent to the Main Admin for verification.");
       } else {
-        toast.error(data.error || "Failed to submit feedback.");
+        toast.error(data.message || data.error || "Failed to submit feedback.");
       }
     } catch {
       toast.error("Network error submitting feedback.");

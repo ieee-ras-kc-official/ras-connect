@@ -1,21 +1,22 @@
-import type { Metadata } from "next";
+import { headers } from "next/headers";
+import { SiteFooter } from "@/components/site-footer";
+import { SiteHeader } from "@/components/site-header";
+import { ToastProvider } from "@/components/toast";
+import { SITE_URL } from "@/config/api";
 import "@fontsource-variable/manrope";
 import "@fontsource/ibm-plex-mono/400.css";
 import "@fontsource/ibm-plex-mono/500.css";
+import type { Metadata } from "next";
 import "./globals.css";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
-import { PageRevealWrapper } from "@/components/page-reveal-wrapper";
-import { ToastProvider } from "@/components/toast";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://connect.ras.ieeekerala.org"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "RAS Connect IEEE | IEEE RAS Kerala Chapter - Robotics & Automation",
     template: "%s | RAS Connect IEEE",
   },
   description:
-    "RAS Connect IEEE is the official digital platform of IEEE RAS Kerala Chapter (Robotics & Automation Society). Explore 37+ Student Branch Chapters, robotics events, technical workshops, competitions, and activities across Kerala.",
+    "RAS Connect IEEE is the official digital platform of IEEE RAS Kerala Chapter (Robotics & Automation Society). Explore Student Branch Chapters, robotics events, technical workshops, competitions, and activities across Kerala.",
   keywords: [
     "ras connect",
     "ras connect ieee",
@@ -35,13 +36,10 @@ export const metadata: Metadata = {
     "ieee kerala section",
     "connect ras ieee kerala",
   ],
-  authors: [{ name: "IEEE RAS Kerala Chapter", url: "https://connect.ras.ieeekerala.org" }],
+  authors: [{ name: "IEEE RAS Kerala Chapter", url: SITE_URL }],
   creator: "IEEE RAS Kerala Chapter",
   publisher: "IEEE Kerala Section",
   applicationName: "RAS Connect IEEE",
-  alternates: {
-    canonical: "https://connect.ras.ieeekerala.org",
-  },
   icons: {
     icon: "/images/brand/ieee-ras-logo.png",
     apple: "/images/brand/ieee-ras-logo.png",
@@ -49,14 +47,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://connect.ras.ieeekerala.org",
+    url: SITE_URL,
     title: "RAS Connect IEEE | Official IEEE RAS Kerala Chapter Platform",
     description:
-      "Statewide showcase of robotics and automation events, workshops, hackathons, and 37+ student branch chapters led by IEEE RAS Kerala Chapter.",
+      "Statewide showcase of robotics and automation events, workshops, hackathons, and student branch chapters led by IEEE RAS Kerala Chapter.",
     siteName: "RAS Connect IEEE",
     images: [
       {
-        url: "/images/brand/ieee-ras-logo.png",
+        url: "/images/brand/social-card.png",
         width: 1200,
         height: 630,
         alt: "RAS Connect IEEE - IEEE RAS Kerala Chapter Logo",
@@ -67,9 +65,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "RAS Connect IEEE | IEEE RAS Kerala Chapter",
     description:
-      "Statewide showcase of robotics and automation events, workshops, hackathons, and 37+ student branch chapters led by IEEE RAS Kerala Chapter.",
-    images: ["/images/brand/ieee-ras-logo.png"],
-    creator: "@IEEERASKerala",
+      "Statewide showcase of robotics and automation events, workshops, hackathons, and student branch chapters led by IEEE RAS Kerala Chapter.",
+    images: ["/images/brand/social-card.png"],
   },
   robots: {
     index: true,
@@ -89,8 +86,8 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "WebSite",
-      "@id": "https://connect.ras.ieeekerala.org/#website",
-      "url": "https://connect.ras.ieeekerala.org",
+      "@id": `${SITE_URL}/#website`,
+      "url": SITE_URL,
       "name": "RAS Connect IEEE",
       "alternateName": [
         "RAS Connect",
@@ -103,21 +100,21 @@ const jsonLd = {
       "inLanguage": "en-US",
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://connect.ras.ieeekerala.org/events/?q={search_term_string}",
+        "target": `${SITE_URL}/events/?q={search_term_string}`,
         "query-input": "required name=search_term_string",
       },
     },
     {
       "@type": "Organization",
-      "@id": "https://connect.ras.ieeekerala.org/#organization",
+      "@id": `${SITE_URL}/#organization`,
       "name": "IEEE RAS Kerala Chapter",
       "alternateName": [
         "IEEE Robotics and Automation Society Kerala Chapter",
         "IEEE RAS Kerala Section",
         "RAS Connect IEEE",
       ],
-      "url": "https://connect.ras.ieeekerala.org",
-      "logo": "https://connect.ras.ieeekerala.org/images/brand/ieee-ras-logo.png",
+      "url": SITE_URL,
+      "logo": `${SITE_URL}/images/brand/ieee-ras-logo.png`,
       "sameAs": ["https://ras.ieeekerala.org", "https://ieeekerala.org"],
       "parentOrganization": {
         "@type": "Organization",
@@ -128,22 +125,24 @@ const jsonLd = {
   ],
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const nonce = (await headers()).get("x-nonce") || undefined;
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <head>
         <script
+          nonce={nonce}
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="antialiased" suppressHydrationWarning>
+      <body className="antialiased">
         <ToastProvider>
-          <PageRevealWrapper>
-            <SiteHeader />
-            <main id="main-content">{children}</main>
-            <SiteFooter />
-          </PageRevealWrapper>
+
+          <SiteHeader />
+          <main id="main-content">{children}</main>
+          <SiteFooter />
+
         </ToastProvider>
       </body>
     </html>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ArchivePageClient } from "./ArchivePageClient";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/archive/" },
   title: "Robotics Event Archive",
   description:
     "Browse the historic archive of robotics competitions, technical exhibitions, and learning milestones documented by IEEE RAS student branch chapters in Kerala.",

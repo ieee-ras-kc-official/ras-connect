@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { EventsPageClient } from "./EventsPageClient";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/events/" },
   title: "Robotics Events & Workshops in Kerala",
   description:
     "Explore upcoming and completed robotics events, hands-on automation workshops, hackathons, and seminars hosted by IEEE RAS Student Branch Chapters.",

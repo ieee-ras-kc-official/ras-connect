@@ -1,14 +1,7 @@
-# RAS Connect Showcase
+# Frontend
 
-A UI-only Next.js implementation of the IEEE RAS Kerala Chapter RAS Connect event showcase.
+Next.js App Router, React and Tailwind, deployed with the native Next.js framework on Vercel. Pages are server-rendered on request so new events/chapters and sitemap entries work without rebuilding. Unknown records return HTTP 404. No Apache configuration or static fallback pages are used.
 
-## Development
+Use Node 22+, copy `.env.example` to `.env`, then `npm ci` and `npm run dev`. Production requires `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_SITE_URL`. See the [root README](../README.md) and [Vercel deployment guide](../DEPLOYMENT.md).
 
-```bash
-npm install
-npm run dev
-```
-
-Run `npm run check` for lint, mock-content integrity, and a production build. With a local server running, `npm run check:routes` exercises the primary routes and branded 404 responses.
-
-The public content is mock data in `src/data/mock-data.ts`. Replace those records and the files in `public/images/` when production content becomes available. Chapter search uses `q`; archive views use `q`, `year`, `chapter`, and `page` URL parameters.
+`npm run check` runs lint, type generation, TypeScript, content validation, native build and HTTP route/security checks. `npm start` starts the production Next.js server. Builds fail on unavailable or invalid source content. The proxy applies a fresh script nonce per request; static resources remain cacheable and pages are never cached with a reused nonce.

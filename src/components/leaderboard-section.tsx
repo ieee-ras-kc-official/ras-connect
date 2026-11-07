@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
 import { ImageWithFallback } from "@/components/image-with-fallback";
 import { Reveal } from "@/components/reveal";
 import { API_BASE_URL } from "@/config/api";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 type Standing = {
   rank: number;
@@ -138,8 +138,8 @@ export function LeaderboardSection() {
               {failed
                 ? "The leaderboard could not be loaded. Please try again later."
                 : standings
-                ? "Standings will appear here once chapters are assigned to clusters."
-                : "Loading standings..."}
+                  ? "Standings will appear here once chapters are assigned to clusters."
+                  : "Loading standings..."}
             </p>
           </div>
         )}

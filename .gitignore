@@ -17,3 +17,5 @@
 # typescript
 *.tsbuildinfo
 cpanel_build.zip
+
+next-env.d.ts

@@ -1,12 +1,11 @@
 "use client";
 
+import type { Chapter } from "@/types/api";
 import { ArrowRightIcon } from "@phosphor-icons/react";
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
 import Link from "next/link";
-import type { Chapter } from "@/data/mock-data";
 
-export function ChapterExplorer({ chapters }: { chapters: any[] }) {
-  const reduceMotion = useReducedMotion();
+export function ChapterExplorer({ chapters }: { chapters: Chapter[] }) {
 
   if (chapters.length === 0) {
     return (
@@ -24,29 +23,20 @@ export function ChapterExplorer({ chapters }: { chapters: any[] }) {
   return (
     <div className="relative">
       {/* Local style block to hide scrollbars cleanly */}
-      <style dangerouslySetInnerHTML={{__html: `
-        .no-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .no-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}} />
 
       <div className="mt-12 flex overflow-x-auto snap-x snap-mandatory gap-6 pb-6 no-scrollbar">
         {chapters.map((chapter, index) => (
           <motion.div
             key={chapter.slug}
-            initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+            initial={false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
             transition={{ duration: 0.35, delay: index * 0.05, ease: [0.2, 0, 0, 1] }}
             className="h-full shrink-0 w-[280px] sm:w-[320px] md:w-[calc((100%-24px*3)/4)] snap-start"
           >
             <Link
-              href={`/chapters/${chapter.slug}`}
-              className="group flex flex-col justify-between h-full min-h-[190px] border border-line bg-background p-6 hover:border-brand hover:bg-surface-soft/40 transition-all duration-300 relative select-none"
+              href={`/chapters/${encodeURIComponent(chapter.slug)}`}
+              className="group flex flex-col justify-between h-full min-h-[190px] border border-line bg-background p-6 hover:border-brand hover:bg-surface-soft/40 transition-all duration-300 relative"
             >
               {/* Top info */}
               <div>

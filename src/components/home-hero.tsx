@@ -1,11 +1,11 @@
 "use client";
 
+import { ImageWithFallback } from "@/components/image-with-fallback";
+import type { RasEvent } from "@/types/api";
 import { ArrowLeftIcon, ArrowRightIcon } from "@phosphor-icons/react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ImageWithFallback } from "@/components/image-with-fallback";
-import { events as allEvents, chapters as allChapters, type RasEvent } from "@/data/mock-data";
 
 type HomeHeroProps = {
   events?: RasEvent[];
@@ -17,6 +17,7 @@ export function HomeHero({ events, chaptersCount, eventsCount }: HomeHeroProps) 
   const reduceMotion = useReducedMotion();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(1); // 1 = right, -1 = left
+  const [paused, setPaused] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
   // Default to empty array if no events passed (removing mock fallbacks!)
@@ -44,19 +45,20 @@ export function HomeHero({ events, chaptersCount, eventsCount }: HomeHeroProps) 
 
   // Auto-play sliding, pausing on hover
   useEffect(() => {
-    if (displayEvents.length === 0 || isHovered || reduceMotion) return;
+    if (displayEvents.length === 0 || isHovered || paused || reduceMotion) return;
     const timer = setInterval(() => {
-      handleNext();
+      setDirection(1);
+      setCurrentIndex(index => (index + 1) % displayEvents.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, [currentIndex, isHovered, reduceMotion, displayEvents.length]);
+  }, [isHovered, paused, reduceMotion, displayEvents.length]);
 
   const entrance = reduceMotion
     ? {}
     : {
-        initial: { opacity: 0, y: 12 },
-        animate: { opacity: 1, y: 0 },
-      };
+      initial: false as const,
+      animate: { opacity: 1, y: 0 },
+    };
 
   // Slide variants for carousel
   const slideVariants = {
@@ -79,7 +81,7 @@ export function HomeHero({ events, chaptersCount, eventsCount }: HomeHeroProps) 
   return (
     <section className="border-b border-line bg-background relative overflow-hidden md:min-h-[calc(100dvh-var(--header-height))] md:flex md:flex-col md:justify-stretch">
       {/* Subtle technical crosshair and grid markings in the background */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.03] select-none" aria-hidden="true">
+      <div className="absolute inset-0 pointer-events-none opacity-[0.03]" aria-hidden="true">
         <div className="absolute top-10 left-10 w-4 h-4 border-t border-l border-ink" />
         <div className="absolute top-10 right-10 w-4 h-4 border-t border-r border-ink" />
         <div className="absolute bottom-10 left-10 w-4 h-4 border-b border-l border-ink" />
@@ -90,7 +92,7 @@ export function HomeHero({ events, chaptersCount, eventsCount }: HomeHeroProps) 
       </div>
 
       <div className="page-container flex-1 flex flex-col md:grid md:grid-cols-12 md:items-stretch border-x border-line relative z-10">
-        
+
         {/* Left Panel: Hero Content */}
         <div className="col-span-12 md:col-span-6 flex flex-col justify-center min-h-[calc(100dvh-var(--header-height))] md:min-h-0 py-6 px-4 md:px-0 md:py-10 md:pr-8 lg:pr-14 md:border-r md:border-line">
 
@@ -105,19 +107,19 @@ export function HomeHero({ events, chaptersCount, eventsCount }: HomeHeroProps) 
               IEEE RAS Kerala Chapter
             </span>
           </motion.div>
-          
+
           {/* Giant Stark Swiss Typography (Fluid sizes to prevent squeeze) */}
           <motion.h1
             {...entrance}
             transition={{ duration: 0.42, delay: reduceMotion ? 0 : 0.05, ease: [0.2, 0, 0, 1] }}
-            className="mt-4 text-6xl font-black leading-[0.9] tracking-[-0.04em] text-ink sm:text-7xl md:text-7xl lg:text-8xl xl:text-[104px] uppercase flex flex-col select-none"
+            className="mt-4 text-6xl font-black leading-[0.9] tracking-[-0.04em] text-ink sm:text-7xl md:text-7xl lg:text-8xl xl:text-[104px] uppercase flex flex-col"
           >
             <span className="flex items-center">
               RAS<span className="text-brand font-mono font-light mx-1">/</span>
             </span>
             <span className="text-brand-deep">CONNECT<span className="text-accent font-sans">.</span></span>
           </motion.h1>
-          
+
           {/* Stark solid horizontal line separator */}
           <motion.div
             initial={reduceMotion ? {} : { scaleX: 0 }}
@@ -133,7 +135,7 @@ export function HomeHero({ events, chaptersCount, eventsCount }: HomeHeroProps) 
           >
             A statewide showcase of robotics events led by IEEE RAS student chapters across Kerala.
           </motion.p>
-          
+
           {/* Stark statistics display */}
           <motion.div
             {...entrance}
@@ -142,7 +144,7 @@ export function HomeHero({ events, chaptersCount, eventsCount }: HomeHeroProps) 
           >
             <div>
               <span className="font-mono text-3xl font-extrabold tracking-tight text-brand">
-                {String(chaptersCount ?? allChapters.length).padStart(2, "0")}
+                {String(chaptersCount ?? 0).padStart(2, "0")}
               </span>
               <span className="block font-mono text-[9px] font-bold uppercase tracking-widest text-muted mt-1">
                 SB CHAPTERS ACTIVE
@@ -150,7 +152,7 @@ export function HomeHero({ events, chaptersCount, eventsCount }: HomeHeroProps) 
             </div>
             <div className="border-l border-line pl-6">
               <span className="font-mono text-3xl font-extrabold tracking-tight text-brand">
-                {String(eventsCount ?? allEvents.length).padStart(2, "0")}
+                {String(eventsCount ?? 0).padStart(2, "0")}
               </span>
               <span className="block font-mono text-[9px] font-bold uppercase tracking-widest text-muted mt-1">
                 EVENTS LOGGED
@@ -181,8 +183,10 @@ export function HomeHero({ events, chaptersCount, eventsCount }: HomeHeroProps) 
         </div>
 
         {/* Right Panel: Event Cards Slider */}
-        <div 
+        <div
           className="col-span-12 md:col-span-6 flex flex-col justify-center py-12 px-4 md:px-0 md:py-10 md:pl-8 lg:pl-14 border-t border-line md:border-t-0"
+          onFocusCapture={() => setIsHovered(true)}
+          onBlurCapture={e => { if (!e.currentTarget.contains(e.relatedTarget)) setIsHovered(false); }}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
@@ -199,12 +203,13 @@ export function HomeHero({ events, chaptersCount, eventsCount }: HomeHeroProps) 
                     {displayEvents.map((_, i) => (
                       <button
                         key={i}
+                        aria-label={`Show event ${i + 1}`}
+                        aria-pressed={i === currentIndex}
                         onClick={() => handleDotClick(i)}
-                        className={`font-mono text-xs transition-all duration-200 cursor-pointer ${
-                          i === currentIndex
+                        className={`font-mono text-xs transition-all duration-200 cursor-pointer ${i === currentIndex
                             ? "text-brand font-bold border-b border-brand pb-0.5"
                             : "text-muted/60 hover:text-ink"
-                        }`}
+                          }`}
                       >
                         {(i + 1).toString().padStart(2, "0")}
                       </button>
@@ -219,7 +224,7 @@ export function HomeHero({ events, chaptersCount, eventsCount }: HomeHeroProps) 
                       key={currentIndex}
                       custom={direction}
                       variants={slideVariants}
-                      initial="enter"
+                      initial={false}
                       animate="center"
                       exit="exit"
                       transition={{
@@ -240,7 +245,7 @@ export function HomeHero({ events, chaptersCount, eventsCount }: HomeHeroProps) 
                           />
                         </Link>
                       </div>
-                      
+
                       {/* Event Name Text with Sharp Swiss layout */}
                       <div className="pt-3 flex items-center gap-3 min-w-0">
                         <span className="font-mono text-[11px] font-medium tracking-wider text-muted/70 shrink-0">
@@ -260,6 +265,7 @@ export function HomeHero({ events, chaptersCount, eventsCount }: HomeHeroProps) 
 
                 {/* Slider Bottom Controls */}
                 <div className="mt-4 flex items-center justify-between border-t border-line pt-4">
+                  <button aria-pressed={paused} onClick={() => setPaused(value => !value)} className="px-3 py-2 border border-line">{paused ? "Play" : "Pause"}</button>
                   <div className="flex gap-2">
                     <button
                       onClick={handlePrev}
