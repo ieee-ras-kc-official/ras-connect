@@ -1,6 +1,6 @@
 "use client";
 
-import { API_BASE_URL, readJson } from "@/config/api";
+import { API_BASE_URL, errorMessage, readJson } from "@/config/api";
 import { EyeIcon, EyeSlashIcon } from "@phosphor-icons/react";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
@@ -51,7 +51,7 @@ export default function LoginPage() {
         setError(data.message || "Invalid username or password.");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to connect to authentication server.");
+      setError(errorMessage(err));
     } finally {
       setLoading(false);
     }

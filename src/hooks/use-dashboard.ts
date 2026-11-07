@@ -1,6 +1,6 @@
 "use client";
 import { useToast } from "@/components/toast";
-import { API_BASE_URL, apiList, readJson } from "@/config/api";
+import { API_BASE_URL, apiList, errorMessage as describeError, readJson } from "@/config/api";
 import { useApi } from "@/hooks/use-api";
 import { useFilePreview } from "@/hooks/use-file-preview";
 import type { Cluster, Chapter as DbChapter, RasEvent as DbEvent, SubAdmin } from "@/types/api";
@@ -234,7 +234,7 @@ export function useDashboard() {
         }
       } catch (err) {
         console.error("Failed to delete sub-admin:", err);
-        toast.error("Network error deleting sub-admin.");
+        toast.error(describeError(err));
       }
     });
   };
@@ -303,7 +303,7 @@ export function useDashboard() {
       }
     } catch (err) {
       console.error("Error updating chapter logo:", err);
-      toast.error("Network error updating chapter logo.");
+      toast.error(describeError(err));
     } finally {
       setUploadingChapterLogo(false);
     }
@@ -348,7 +348,7 @@ export function useDashboard() {
       }
     } catch (err) {
       console.error("Error updating password:", err);
-      toast.error("Network error updating password.");
+      toast.error(describeError(err));
     } finally {
       setChangingPassword(false);
     }
@@ -531,7 +531,7 @@ export function useDashboard() {
         }
       } catch (err) {
         console.error("Failed to delete event:", err);
-        toast.error("Network error deleting event.");
+        toast.error(describeError(err));
       }
     });
   };
@@ -613,7 +613,7 @@ export function useDashboard() {
         }
       } catch (err) {
         console.error("Failed to delete chapter:", err);
-        toast.error("Network error deleting chapter.");
+        toast.error(describeError(err));
       }
     });
   };

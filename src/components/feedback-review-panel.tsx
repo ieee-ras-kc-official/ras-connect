@@ -1,7 +1,7 @@
 "use client";
 
 import { useToast } from "@/components/toast";
-import { API_BASE_URL, readJson } from "@/config/api";
+import { API_BASE_URL, errorMessage, readJson } from "@/config/api";
 import { STATUS_BADGE, type Feedback, type FeedbackStatus } from "@/utils/feedback";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -66,8 +66,8 @@ function ReviewCard({
       } else {
         toast.error(data.message || data.error || "Failed to review feedback.");
       }
-    } catch {
-      toast.error("Network error reviewing feedback.");
+    } catch (error) {
+      toast.error(errorMessage(error));
     } finally {
       setSaving(false);
     }
@@ -212,15 +212,17 @@ function ReviewCard({
 export function FeedbackReviewPanel({ chapters }: { chapters: ReviewChapter[] }) {
   const [items, setItems] = useState<Feedback[] | null>(null);
   const [filter, setFilter] = useState<FeedbackStatus>("pending");
+  const [loadError, setLoadError] = useState("");
+  const [retry, setRetry] = useState(0);
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/feedback`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("admin_token")}` },
     })
-      .then((res) => (res.ok ? res.json() : []))
+      .then((res) => readJson<Feedback[]>(res))
       .then(setItems)
-      .catch(() => setItems([]));
-  }, []);
+      .catch((error) => setLoadError(errorMessage(error)));
+  }, [retry]);
 
   const visible = (items ?? []).filter((item) => item.status === filter);
 
@@ -229,6 +231,7 @@ export function FeedbackReviewPanel({ chapters }: { chapters: ReviewChapter[] })
       <h2 className="border-b border-line pb-2 text-xl font-bold uppercase tracking-tight text-ink">
         Feedback Review
       </h2>
+      {loadError && <div role="alert" className="border border-red-500 p-4"><p>{loadError}</p><button className="min-h-11 underline" onClick={() => { setLoadError(""); setRetry(value => value + 1); }}>Retry loading feedback</button></div>}
       <div className="flex flex-wrap gap-2">
         {FILTERS.map((status) => (
           <button

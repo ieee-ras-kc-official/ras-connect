@@ -37,8 +37,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     const id = crypto.randomUUID();
     setToasts((prev) => [...prev, { id, message, type }]);
 
-    // Auto-remove after 4 seconds
-    timers.current.set(id, setTimeout(() => {
+    // Keep errors visible until dismissed so users can read and correct them.
+    if (type !== "error") timers.current.set(id, setTimeout(() => {
       removeToast(id);
     }, 4000));
   }, [removeToast]);
@@ -76,7 +76,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               {/* Message */}
               <div className="flex-1 min-w-0">
                 <p className="font-mono text-[9px] font-bold uppercase tracking-widest text-muted mb-0.5">
-                  SYSTEM // {t.type}
+                  {t.type === "error" ? "Action needed" : t.type === "success" ? "Success" : "Information"}
                 </p>
                 <p className="text-xs text-ink font-mono font-medium leading-relaxed break-words">
                   {t.message}

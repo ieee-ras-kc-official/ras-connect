@@ -1,7 +1,7 @@
 "use client";
 
 import { useToast } from "@/components/toast";
-import { API_BASE_URL, readJson } from "@/config/api";
+import { API_BASE_URL, errorMessage, readJson } from "@/config/api";
 import {
   STATUS_BADGE,
   type Attachment,
@@ -146,6 +146,8 @@ export function EventFeedbackForm({ eventSlug }: { eventSlug: string }) {
   const [attendance, setAttendance] = useState<Attachment | null>(null);
   const [uploading, setUploading] = useState<"photo" | "attendance" | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState("");
+  const [retry, setRetry] = useState(0);
 
   useEffect(() => {
     const token = localStorage.getItem("admin_token");
@@ -154,7 +156,7 @@ export function EventFeedbackForm({ eventSlug }: { eventSlug: string }) {
     fetch(`${API_BASE_URL}/api/feedback/event/${encodeURIComponent(eventSlug)}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((res) => (res.ok ? res.json() : null))
+      .then((res) => readJson<FormContext>(res))
       .then((data: FormContext | null) => {
         if (!data) return;
         setContext(data);
@@ -168,8 +170,8 @@ export function EventFeedbackForm({ eventSlug }: { eventSlug: string }) {
           setAttendance(saved.attendance);
         }
       })
-      .catch((err) => console.error("Failed to load feedback form:", err));
-  }, [eventSlug]);
+      .catch((error) => setFormError(errorMessage(error)));
+  }, [eventSlug, retry]);
 
   const loaded = Boolean(context);
   useEffect(() => {
@@ -178,7 +180,7 @@ export function EventFeedbackForm({ eventSlug }: { eventSlug: string }) {
     }
   }, [loaded]);
 
-  if (!context) return null;
+  if (!context) return formError ? <section className="border border-red-500 p-4" role="alert"><p>{formError}</p><button className="min-h-11 underline" onClick={() => { setFormError(""); setRetry(value => value + 1); }}>Retry loading feedback form</button><a className="ml-4 underline" href="/admin/dashboard/">Open account settings</a></section> : null;
 
   const uploadFile = async (file: File, kind: "photo" | "attendance") => {
     if (file.size > MAX_FILE_BYTES) {
@@ -192,7 +194,7 @@ export function EventFeedbackForm({ eventSlug }: { eventSlug: string }) {
         headers: { "Content-Type": "application/json", ...auth },
         body: JSON.stringify({ kind, fileName: file.name }),
       });
-      const signed = await signRes.json();
+      const signed = await readJson<{ direct: boolean; cloudName: string; resourceType: string; params: Record<string, string>; apiKey: string; signature: string; receiptId: string; message?: string; error?: string }>(signRes);
       if (!signRes.ok) {
         toast.error(signed.message || signed.error || `Failed to upload ${file.name}.`);
         return null;
@@ -209,13 +211,13 @@ export function EventFeedbackForm({ eventSlug }: { eventSlug: string }) {
           method: "POST",
           body: formData,
         });
-        const data = await res.json();
+        const data = await readJson<{ success: boolean; message?: string; error?: string; attachment: Attachment; feedback: Feedback }>(res);
         if (res.ok) {
           const confirmed = await fetch(`${API_BASE_URL}/api/feedback/uploads/${encodeURIComponent(signed.receiptId)}/confirm`, { method: "POST", headers: auth });
           const result = await readJson<{ attachment: Attachment }>(confirmed);
           return result.attachment;
         }
-        toast.error(data.error?.message || `Failed to upload ${file.name}.`);
+        toast.error(data.error || `Unable to upload ${file.name}. Please try again.`);
         return null;
       }
 
@@ -226,11 +228,11 @@ export function EventFeedbackForm({ eventSlug }: { eventSlug: string }) {
         headers: auth,
         body: formData,
       });
-      const data = await res.json();
+      const data = await readJson<{ success: boolean; message?: string; error?: string; attachment: Attachment; feedback: Feedback }>(res);
       if (res.ok && data.success) return data.attachment as Attachment;
       toast.error(data.message || data.error || `Failed to upload ${file.name}.`);
-    } catch {
-      toast.error(`Network error uploading ${file.name}.`);
+    } catch (error) {
+      toast.error(errorMessage(error));
     }
     return null;
   };
@@ -279,15 +281,15 @@ export function EventFeedbackForm({ eventSlug }: { eventSlug: string }) {
           attendance,
         }),
       });
-      const data = await res.json();
+      const data = await readJson<{ success: boolean; message?: string; error?: string; attachment: Attachment; feedback: Feedback }>(res);
       if (res.ok && data.success) {
         setContext({ ...context, feedback: data.feedback });
         toast.success("Feedback sent to the Main Admin for verification.");
       } else {
         toast.error(data.message || data.error || "Failed to submit feedback.");
       }
-    } catch {
-      toast.error("Network error submitting feedback.");
+    } catch (error) {
+      toast.error(errorMessage(error));
     } finally {
       setSubmitting(false);
     }

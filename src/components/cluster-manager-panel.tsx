@@ -1,7 +1,7 @@
 "use client";
 
 import { useToast } from "@/components/toast";
-import { API_BASE_URL } from "@/config/api";
+import { API_BASE_URL, errorMessage, readJson } from "@/config/api";
 import { PencilSimple } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 
@@ -87,7 +87,7 @@ function ClusterCard({
         },
         body: JSON.stringify({ lead: draft.lead, subcom: draft.subcom, hub: draft.hub }),
       });
-      const data = await res.json();
+      const data = await readJson<{ success: boolean; cluster: ClusterDetails; message?: string; error?: string }>(res);
       if (res.ok && data.success) {
         onSaved(data.cluster);
         setEditing(false);
@@ -95,8 +95,8 @@ function ClusterCard({
       } else {
         toast.error(data.message || data.error || "Failed to update cluster.");
       }
-    } catch {
-      toast.error("Network error updating cluster.");
+    } catch (error) {
+      toast.error(errorMessage(error));
     } finally {
       setSaving(false);
     }
@@ -228,15 +228,17 @@ export function ClusterManagerPanel({
 }) {
   const toast = useToast();
   const [clusters, setClusters] = useState<ClusterDetails[] | null>(null);
+  const [loadError, setLoadError] = useState("");
+  const [retry, setRetry] = useState(0);
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/clusters`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("admin_token")}` },
     })
-      .then((res) => (res.ok ? res.json() : []))
+      .then((res) => readJson<ClusterDetails[]>(res))
       .then(setClusters)
-      .catch(() => setClusters([]));
-  }, []);
+      .catch((error) => setLoadError(errorMessage(error)));
+  }, [retry]);
 
   const moveChapter = async (chapter: ClusterChapter, value: string) => {
     try {
@@ -248,18 +250,19 @@ export function ClusterManagerPanel({
         },
         body: JSON.stringify({ cluster: value }),
       });
-      const data = await res.json();
+      const data = await readJson<{ success: boolean; message?: string; error?: string }>(res);
       if (res.ok && data.success) {
         await onChaptersChanged();
         toast.success(value ? `${chapter.name} moved to Cluster ${value}.` : `${chapter.name} removed from its cluster.`);
       } else {
         toast.error(data.message || data.error || "Failed to move college.");
       }
-    } catch {
-      toast.error("Network error moving college.");
+    } catch (error) {
+      toast.error(errorMessage(error));
     }
   };
 
+  if (loadError) return <div role="alert" className="border border-red-500 p-4"><p>{loadError}</p><button className="min-h-11 underline" onClick={() => { setLoadError(""); setRetry(value => value + 1); }}>Retry loading clusters</button></div>;
   if (clusters === null) {
     return <p className="font-mono text-xs text-muted">Loading clusters...</p>;
   }
