@@ -22,6 +22,15 @@ export default function AdminDashboardPage() {
     );
   }
 
+  if (!adminUser) {
+    return (
+      <div className="page-container py-12" role="alert">
+        <p>{errorMessage || "Unable to verify your session."}</p>
+        <button className="mt-4 underline" onClick={() => window.location.reload()}>Retry</button>
+      </div>
+    );
+  }
+
   if (mustChangePassword) {
     return (
       <div className="page-container py-12 md:py-16 flex flex-col items-center">
@@ -102,6 +111,7 @@ export default function AdminDashboardPage() {
         <div className="bg-red-50 border-l-2 border-red-500 p-4 mt-6">
           <p className="font-mono text-[10px] uppercase tracking-wider text-red-600 font-bold">Error</p>
           <p className="text-xs text-red-700 mt-1">{errorMessage}</p>
+          <button className="mt-2 text-sm underline" onClick={() => fetchData()}>Retry loading dashboard</button>
         </div>
       )}
 

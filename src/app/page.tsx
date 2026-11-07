@@ -5,7 +5,6 @@ import { LeaderboardSection } from "@/components/leaderboard-section";
 import { Reveal } from "@/components/reveal";
 import { apiList } from "@/config/api";
 import type { Chapter, RasEvent } from "@/types/api";
-import { isEventPassed } from "@/utils/date";
 import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 
@@ -13,14 +12,13 @@ import Link from "next/link";
 export const metadata = { alternates: { canonical: "/" } };
 export default async function HomePage() {
   const [chapters, events] = await Promise.all([apiList<Chapter>("/api/chapters", { cache: "no-store" }), apiList<RasEvent>("/api/events", { cache: "no-store" })]);
-  const activeEvents = events.filter(event => !isEventPassed(event.date));
-  const latestEvents = activeEvents.slice(0, 8);
-  const heroEvents = activeEvents.filter(event => event.featured).slice(0, 5);
+  const latestEvents = events.slice(0, 8);
+  const heroEvents = events.filter(event => event.featured).slice(0, 5);
   const featuredChapters = chapters.slice(0, 5);
 
   return (
     <>
-      <HomeHero events={heroEvents} chaptersCount={chapters.length} eventsCount={activeEvents.length} />
+      <HomeHero events={heroEvents} chaptersCount={chapters.length} eventsCount={events.length} />
 
       {/* About RAS Connect Section */}
       <section className="section-space bg-background border-b border-line" aria-labelledby="about-heading">

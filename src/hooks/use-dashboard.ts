@@ -1,6 +1,6 @@
 "use client";
 import { useToast } from "@/components/toast";
-import { API_BASE_URL, apiList, errorMessage as describeError, readJson } from "@/config/api";
+import { API_BASE_URL, ApiError, apiList, errorMessage as describeError, readJson } from "@/config/api";
 import { useApi } from "@/hooks/use-api";
 import { useFilePreview } from "@/hooks/use-file-preview";
 import type { Cluster, Chapter as DbChapter, RasEvent as DbEvent, SubAdmin } from "@/types/api";
@@ -111,6 +111,7 @@ export function useDashboard() {
   }, [fetch]);
 
   const fetchData = useCallback(async (currentRole?: string, chapterSlug?: string) => {
+    setErrorMessage("");
     try {
       const chaptersRes = await fetch(`${API_BASE_URL}/api/chapters`);
       const chaptersData = await readJson<DbChapter[]>(chaptersRes);
@@ -182,15 +183,19 @@ export function useDashboard() {
           setMustChangePassword(Boolean(data.decoded.mustChangePassword));
           if (data.decoded.mustChangePassword) setActiveTab("account");
           else {
-            const chapterRows = await apiList<DbChapter>("/api/chapters");
-            setChapters(chapterRows);
-            const eventRows = await apiList<DbEvent>("/api/events", { headers: { Authorization: `Bearer ${token}` } });
-            setEvents(eventRows);
-            setEventChapter(data.decoded.chapterSlug || chapterRows[0]?.slug || "");
-            if (data.decoded.role === "superadmin") {
-              setSubadmins(await apiList<SubAdmin>("/api/admin/subadmins", { headers: { Authorization: `Bearer ${token}` } }));
-              setClusters(await apiList<Cluster>("/api/clusters", { headers: { Authorization: `Bearer ${token}` } }));
-            } else { setSubChapterDesc(chapterRows.find(c => c.slug === data.decoded.chapterSlug)?.description || ""); setMyFeedback(await apiList<Feedback>("/api/feedback", { headers: { Authorization: `Bearer ${token}` } })); }
+            try {
+              const chapterRows = await apiList<DbChapter>("/api/chapters");
+              setChapters(chapterRows);
+              const eventRows = await apiList<DbEvent>("/api/events", { headers: { Authorization: `Bearer ${token}` } });
+              setEvents(eventRows);
+              setEventChapter(data.decoded.chapterSlug || chapterRows[0]?.slug || "");
+              if (data.decoded.role === "superadmin") {
+                setSubadmins(await apiList<SubAdmin>("/api/admin/subadmins", { headers: { Authorization: `Bearer ${token}` } }));
+                setClusters(await apiList<Cluster>("/api/clusters", { headers: { Authorization: `Bearer ${token}` } }));
+              } else { setSubChapterDesc(chapterRows.find(c => c.slug === data.decoded.chapterSlug)?.description || ""); setMyFeedback(await apiList<Feedback>("/api/feedback", { headers: { Authorization: `Bearer ${token}` } })); }
+            } catch (err) {
+              setErrorMessage(describeError(err, "Unable to load dashboard data. Please retry."));
+            }
           }
           setLoading(false);
         } else {
@@ -199,10 +204,12 @@ export function useDashboard() {
           router.push("/login");
         }
       } catch (err) {
-        console.error("Auth verification failed:", err);
-        localStorage.removeItem("admin_token");
-        window.dispatchEvent(new Event("auth-change"));
-        router.push("/login");
+        if (err instanceof ApiError && err.status === 401) {
+          router.replace("/login");
+        } else {
+          setErrorMessage(describeError(err, "Unable to verify your session. Please retry."));
+          setLoading(false);
+        }
       }
     };
 
