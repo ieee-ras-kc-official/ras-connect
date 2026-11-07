@@ -288,10 +288,11 @@ export function EventsPanel({ dashboard }: { dashboard: ReturnType<typeof useDas
 
           <div>
             <label className="font-mono text-[10px] uppercase tracking-widest text-muted block mb-1" htmlFor="dashboard-field-5">
-              Registration Link (Optional)
+              Registration Link (Required)
             </label>
             <input id="dashboard-field-5"
               type="url"
+              required
               value={eventRegistrationLink}
               onChange={(e) => setEventRegistrationLink(e.target.value)}
               placeholder="https://example.com/register"
