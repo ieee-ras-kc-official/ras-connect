@@ -311,6 +311,11 @@ export function useDashboard() {
 
   const handleSelfPasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!currentPassword) {
+      toast.error("Enter the password you used to sign in.");
+      return;
+    }
+
     if (!selfNewPassword || selfNewPassword.length < 10) {
       toast.error("New password must be at least 10 characters long.");
       return;
@@ -339,7 +344,8 @@ export function useDashboard() {
 
       const data = await response.json();
       if (response.ok && data.success) {
-        toast.success("Your password has been updated successfully!");
+        toast.success("Your password has been updated successfully! Sign in again with your new password.");
+        setCurrentPassword("");
         setSelfNewPassword("");
         setSelfConfirmPassword("");
         handleSignOut();

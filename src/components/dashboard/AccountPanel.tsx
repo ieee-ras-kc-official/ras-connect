@@ -16,8 +16,17 @@ export function AccountPanel({ dashboard }: { dashboard: ReturnType<typeof useDa
     </p>
 
     <form onSubmit={handleSelfPasswordChange} className="space-y-4">
-      {mustChangePassword && <p role="status">Change your temporary password to unlock chapter management.</p>}
-      <div><label htmlFor="current-password">Current password</label><input id="current-password" type="password" autoComplete="current-password" required value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} className="w-full border-b border-line py-2" /></div>
+      {mustChangePassword && (
+        <p role="status" className="text-xs font-mono text-amber-700 leading-relaxed">
+          Your account requires a new password before anything else can be used.
+        </p>
+      )}
+      <div>
+        <label className="font-mono text-[10px] uppercase tracking-widest text-muted block mb-1" htmlFor="current-password">
+          Current password
+        </label>
+        <input id="current-password" type="password" autoComplete="current-password" required value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} placeholder="••••••••" className="w-full bg-transparent py-2.5 border-b border-line text-sm text-ink outline-none focus:border-brand transition-colors rounded-none" />
+      </div>
       <div>
         <label className="font-mono text-[10px] uppercase tracking-widest text-muted block mb-1" htmlFor="dashboard-field-13">
           New Password (Minimum 10 characters)

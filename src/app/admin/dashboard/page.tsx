@@ -11,13 +11,60 @@ import { isEventPassed } from "@/utils/date";
 import { Calendar, ClipboardText, Key, List, ShieldCheck, SignOut, SquaresFour, Users } from "@phosphor-icons/react";
 export default function AdminDashboardPage() {
   const dashboard = useDashboard();
-  const { loading, adminUser, role, chapters, errorMessage, activeTab, setActiveTab, confirmModal, setConfirmModal, fetchData, handleSignOut, displayedChapters, displayedEvents } = dashboard;
+  const { loading, adminUser, role, chapters, errorMessage, activeTab, setActiveTab, confirmModal, setConfirmModal, fetchData, handleSignOut, displayedChapters, displayedEvents, mustChangePassword } = dashboard;
   if (loading) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center">
         <span className="font-mono text-xs uppercase tracking-widest text-muted animate-pulse">
           Verifying Session Credentials...
         </span>
+      </div>
+    );
+  }
+
+  if (mustChangePassword) {
+    return (
+      <div className="page-container py-12 md:py-16 flex flex-col items-center">
+        <div className="w-full max-w-xl space-y-6">
+          <div className="border-b border-line pb-6">
+            <div className="flex items-center gap-2">
+              <span className="inline-block size-2 bg-brand rounded-none" />
+              <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-brand">
+                Admin Session // Password Change Required
+              </span>
+            </div>
+            <h1 className="text-3xl font-black uppercase tracking-tight text-ink mt-2">
+              Set a New Password
+            </h1>
+            <p className="text-xs font-mono text-muted mt-1">
+              Logged in as <span className="text-brand font-bold">@{adminUser}</span>
+            </p>
+          </div>
+
+          <div className="bg-amber-50 border-l-2 border-amber-500 p-4">
+            <p className="font-mono text-[10px] uppercase tracking-wider text-amber-700 font-bold">Action required</p>
+            <p className="text-xs text-amber-800 mt-1 leading-relaxed">
+              Your account is using a temporary password, so the dashboard is locked. Enter the password you signed in with and choose a new one below. You will be asked to sign in again after the change.
+            </p>
+          </div>
+
+          {errorMessage && (
+            <div className="bg-red-50 border-l-2 border-red-500 p-4">
+              <p className="font-mono text-[10px] uppercase tracking-wider text-red-600 font-bold">Error</p>
+              <p className="text-xs text-red-700 mt-1">{errorMessage}</p>
+            </div>
+          )}
+
+          <AccountPanel dashboard={dashboard} />
+
+          <button
+            onClick={handleSignOut}
+            className="inline-flex h-11 items-center justify-center gap-2 border border-ink bg-transparent hover:bg-ink hover:text-white px-5 text-xs font-mono uppercase tracking-wider text-ink transition-colors duration-150 rounded-none cursor-pointer"
+          >
+            <SignOut size={14} />
+            Sign Out
+          </button>
+        </div>
       </div>
     );
   }
